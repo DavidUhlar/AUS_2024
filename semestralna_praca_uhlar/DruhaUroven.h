@@ -215,6 +215,7 @@ public:
             }
             if (indexMenu == 1)
             {
+
                 //ist na rodica
                 if (!hierarchy_.isRoot(*actualPosition))
                 {
