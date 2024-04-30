@@ -58,28 +58,6 @@ private:
 
 };
 
-class HierarchyNode
-{
-public:
-
-
-    
-    std::string getName() const { return name_; }
-    Zastavka* getZastavka() const { return zastavka_; }
-    bool getIsZastavka() { return isZastavka_; }
-
-    void setZastavka(Zastavka* zastavka) { zastavka_ = zastavka; }
-    void setName(const std::string& name) { name_ = name; }
-    void setIsZastavka(bool value) { isZastavka_ = value; }
-    
-    
-private:
-    Zastavka* zastavka_;
-    std::string name_;
-    bool isZastavka_;
-
-
-};
 
 
 class readerCsv
@@ -147,7 +125,7 @@ class BusStopManager
 {
 public:
 
-    std::string splitString(std::string& input, int columnIndex, char delimiter) {
+    /*std::string splitString(std::string& input, int columnIndex, char delimiter) {
         std::stringstream ss(input);
         std::string columnValue;
         for (int i = 0; i <= columnIndex; ++i) {
@@ -157,13 +135,13 @@ public:
             }
         }
         return columnValue;
-    }
+    }*/
     
     
     
     template<typename InputIterator, typename OutputContainer, typename Predicate>
     void filterAndInsert(InputIterator begin, InputIterator end, OutputContainer& outputSequence, Predicate predicate) {
-        int count = 1;
+        
         for (auto i = begin; i != end; ++i) {
             
             if (predicate(*i))
@@ -176,8 +154,8 @@ public:
     
 
 
-    template <typename DataType>
-    void printSequence(ds::amt::ImplicitSequence<DataType>& sequence) {
+    
+    void printSequence(ds::amt::ImplicitSequence<Zastavka*>& sequence) {
         std::cout << "   ";
 
         for (auto i = sequence.begin(); i != sequence.end(); ++i) {
@@ -194,6 +172,12 @@ public:
         }
     };
 
+    bool startsWithString(Zastavka* stop, std::string searchString) {
+        return stop->getStopName().find(searchString) == 0;
+        
+    };
+    bool containsString(Zastavka* stop, std::string searchString) {
+        return stop->getStopName().find(searchString) != std::string::npos;
 
-
+    };
 };

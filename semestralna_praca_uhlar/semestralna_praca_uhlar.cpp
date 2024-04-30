@@ -19,8 +19,6 @@ int main()
     SetConsoleCP(1250);
 
     
-    
-    
 
     //readerCsv reader;
     ds::amt::ImplicitSequence<Zastavka*> cow = readerCsv::readFile<Zastavka>("data/cow_busstops.csv");
@@ -109,105 +107,121 @@ int main()
 
                     /*dataset = cow;*/
                     busAlgoritmus.filterAndInsert(cow.begin(), cow.end(), filteredStarts,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) == 0;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                            
+                            return busAlgoritmus.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(cow.begin(), cow.end(), filteredContains,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) != std::string::npos;
-                        });
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                           
+                            return busAlgoritmus.containsString(stop, searchString);
+                        }); 
                     choice = -1;
 
                     break;
                 case 2:
                     /*dataset = kam;*/
                     busAlgoritmus.filterAndInsert(kam.begin(), kam.end(), filteredStarts,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) == 0;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(kam.begin(), kam.end(), filteredContains,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) != std::string::npos;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 3:
                     /*dataset = nan;*/
                     busAlgoritmus.filterAndInsert(nan.begin(), nan.end(), filteredStarts,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) == 0;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(nan.begin(), nan.end(), filteredContains,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) != std::string::npos;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 4:
                     /*dataset = vic;*/
                     busAlgoritmus.filterAndInsert(vic.begin(), vic.end(), filteredStarts,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) == 0;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(vic.begin(), vic.end(), filteredContains,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) != std::string::npos;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 5:
                     /*dataset = vly;*/
                     busAlgoritmus.filterAndInsert(vly.begin(), vly.end(), filteredStarts,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) == 0;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(vly.begin(), vly.end(), filteredContains,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) != std::string::npos;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 6:
                     /*dataset = whi;*/
                     busAlgoritmus.filterAndInsert(whi.begin(), whi.end(), filteredStarts,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) == 0;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(whi.begin(), whi.end(), filteredContains,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) != std::string::npos;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 7:
                     /*dataset = wil;*/
                     busAlgoritmus.filterAndInsert(wil.begin(), wil.end(), filteredStarts,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) == 0;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(wil.begin(), wil.end(), filteredContains,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) != std::string::npos;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 8:
                     /*dataset = wkt;*/
                     busAlgoritmus.filterAndInsert(wkt.begin(), wkt.end(), filteredStarts,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) == 0;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(wkt.begin(), wkt.end(), filteredContains,
-                        [searchString](Zastavka* stop) {
-                            return stop->getStopName().find(searchString) != std::string::npos;
+                        [&busAlgoritmus, searchString](Zastavka* stop) {
+
+                            return busAlgoritmus.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;

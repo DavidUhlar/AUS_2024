@@ -2,6 +2,29 @@
 #include <iostream>
 #include <libds/heap_monitor.h>
 
+class HierarchyNode
+{
+public:
+
+
+
+    std::string getName() const { return name_; }
+    Zastavka* getZastavka() const { return zastavka_; }
+    bool getIsZastavka() { return isZastavka_; }
+
+    void setZastavka(Zastavka* zastavka) { zastavka_ = zastavka; }
+    void setName(const std::string& name) { name_ = name; }
+    void setIsZastavka(bool value) { isZastavka_ = value; }
+
+
+private:
+    Zastavka* zastavka_;
+    std::string name_;
+    bool isZastavka_;
+
+
+};
+
 class HierarchyHandler
 {
 private:
