@@ -26,5 +26,8 @@
     <ClInclude Include="PrvaUroven.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TretiaUroven.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

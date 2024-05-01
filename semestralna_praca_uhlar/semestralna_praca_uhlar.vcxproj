@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClInclude Include="DruhaUroven.h" />
     <ClInclude Include="PrvaUroven.h" />
+    <ClInclude Include="TretiaUroven.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

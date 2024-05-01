@@ -9,12 +9,13 @@
 #include <libds/amt/explicit_hierarchy.h>
 #include "DruhaUroven.h"
 #include <libds/heap_monitor.h>
+#include "TretiaUroven.h"
 
 int main()
 {
     initHeapMonitor();
     
-
+    
     SetConsoleOutputCP(1250);
     SetConsoleCP(1250);
 
@@ -34,7 +35,14 @@ int main()
 
     
     HierarchyHandler hierarchyHandler;
-    
+    TableHandler tableHandlerCow;
+    TableHandler tableHandlerKam;
+    TableHandler tableHandlerNan;
+    TableHandler tableHandlerVic;
+    TableHandler tableHandlerVly;
+    TableHandler tableHandlerWhi;
+    TableHandler tableHandlerWil;
+    TableHandler tableHandlerWkt;
 
     hierarchyHandler.createHierarchy();
     hierarchyHandler.loadHierarchy(cow);
@@ -46,9 +54,16 @@ int main()
     hierarchyHandler.loadHierarchy(wil);
     hierarchyHandler.loadHierarchy(wkt);
     
-    
-    
-    
+    ds::adt::HashTable<std::string, ds::amt::ImplicitSequence<Zastavka*>*> tableCow = tableHandlerCow.loadTable(cow.begin(), cow.end());
+    ds::adt::HashTable<std::string, ds::amt::ImplicitSequence<Zastavka*>*> tableKam = tableHandlerKam.loadTable(kam.begin(), kam.end());
+    ds::adt::HashTable<std::string, ds::amt::ImplicitSequence<Zastavka*>*> tableNan = tableHandlerNan.loadTable(nan.begin(), nan.end());
+    ds::adt::HashTable<std::string, ds::amt::ImplicitSequence<Zastavka*>*> tableVic = tableHandlerVic.loadTable(vic.begin(), vic.end());
+    ds::adt::HashTable<std::string, ds::amt::ImplicitSequence<Zastavka*>*> tableVly = tableHandlerVly.loadTable(vly.begin(), vly.end());
+    ds::adt::HashTable<std::string, ds::amt::ImplicitSequence<Zastavka*>*> tableWhi = tableHandlerWhi.loadTable(whi.begin(), whi.end());
+    ds::adt::HashTable<std::string, ds::amt::ImplicitSequence<Zastavka*>*> tableWil = tableHandlerWil.loadTable(wil.begin(), wil.end());
+    ds::adt::HashTable<std::string, ds::amt::ImplicitSequence<Zastavka*>*> tableWkt = tableHandlerWkt.loadTable(wkt.begin(), wkt.end());
+
+
     int menu;
     while (true)
     {
@@ -62,20 +77,20 @@ int main()
         std::cin >> menu;
         std::cout << std::endl;
 
-        
+
         if (menu == 1)
         {
             ds::amt::ImplicitSequence<Zastavka*> filteredStarts;
             ds::amt::ImplicitSequence<Zastavka*> filteredContains;
-        
-            
+
+
 
 
             //////////////////////////////////////////////
-            
+
             std::string searchString = "";
             //////////////////////////////////////////////
-            
+
             std::cout << "Zadaj string: ";
             //std::cin >> searchString;
 
@@ -97,7 +112,7 @@ int main()
                 std::cout << "6. whi" << std::endl;
                 std::cout << "7. wil" << std::endl;
                 std::cout << "8. wkt" << std::endl;
-                
+
                 std::cout << "Zadaj cislo volby: ";
                 std::cin >> choice;
 
@@ -108,15 +123,15 @@ int main()
                     /*dataset = cow;*/
                     busAlgoritmus.filterAndInsert(cow.begin(), cow.end(), filteredStarts,
                         [&busAlgoritmus, searchString](Zastavka* stop) {
-                            
+
                             return busAlgoritmus.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(cow.begin(), cow.end(), filteredContains,
                         [&busAlgoritmus, searchString](Zastavka* stop) {
-                           
+
                             return busAlgoritmus.containsString(stop, searchString);
-                        }); 
+                        });
                     choice = -1;
 
                     break;
@@ -232,11 +247,11 @@ int main()
                 }
             } while (choice != -1);
 
-            
-            
-            
 
-            
+
+
+
+
             std::cout << "\n-------------------------" << std::endl;
             std::cout << "filter start: " << filteredStarts.size() << std::endl;
             busAlgoritmus.printSequence(filteredStarts);
@@ -244,8 +259,8 @@ int main()
             std::cout << "filter obsahuje: " << filteredContains.size() << std::endl;
             busAlgoritmus.printSequence(filteredContains);
             std::cout << "\n " << std::endl;
-            
-            
+
+
         }
         else if (menu == 2)
         {
@@ -253,12 +268,110 @@ int main()
 
 
             std::cout << "\nmohutny " << hierarchyHandler.getHierarchy().size() << std::endl;
-            
+
             hierarchyHandler.iterateHierarchy();
 
+
+
+        }
+
+        else if (menu == 3)
+        { 
             
-            
-        } else if (menu == 0)
+
+
+            int choice;
+            do {
+
+                std::cout << "Vyber dataset:" << std::endl;
+                std::cout << "1. cow" << std::endl;
+                std::cout << "2. kam" << std::endl;
+                std::cout << "3. nan" << std::endl;
+                std::cout << "4. vic" << std::endl;
+                std::cout << "5. vly" << std::endl;
+                std::cout << "6. whi" << std::endl;
+                std::cout << "7. wil" << std::endl;
+                std::cout << "8. wkt" << std::endl;
+
+                std::cout << "Zadaj cislo volby: ";
+                std::cin >> choice;
+
+                //////////////////////////////////////////////
+
+                std::string searchString = "";
+                //////////////////////////////////////////////
+
+                std::cout << "Zadaj string: ";
+                //std::cin >> searchString;
+
+                std::cin.ignore();
+                std::getline(std::cin, searchString);
+                std::cout << "\n" << std::endl; 
+                std::cout << "\n";
+                
+                
+
+                switch (choice) {
+                case 1:
+
+                    /*dataset = cow;*/
+                    //tableX = tableHandler.loadTable(cow.begin(), cow.end());
+                    //tableX = tableHandler.loadTable(nan.begin(), nan.end(), searchString);
+                    tableHandlerCow.filterTable(tableCow, searchString);
+                    //tableHandler.cleanUp(tableX);
+                    choice = -1;
+                    break;
+                case 2:
+                    /*dataset = kam;*/
+                    
+                    tableHandlerKam.filterTable(tableKam, searchString);
+
+                    choice = -1;
+                    break;
+                case 3:
+                    /*dataset = nan;*/
+                    tableHandlerNan.filterTable(tableNan, searchString);
+
+                    choice = -1;
+                    break;
+                case 4:
+                    /*dataset = vic;*/
+                    
+                    tableHandlerVic.filterTable(tableVic, searchString);
+                    choice = -1;
+                    break;
+                case 5:
+                    /*dataset = vly;*/
+                    
+                    tableHandlerVly.filterTable(tableVly, searchString);
+                    choice = -1;
+                    break;
+                case 6:
+                    /*dataset = whi;*/
+                    
+                    tableHandlerWhi.filterTable(tableWhi, searchString);
+                    choice = -1;
+                    break;
+                case 7:
+                    /*dataset = wil;*/
+                    
+                    tableHandlerWil.filterTable(tableWil, searchString);
+                    choice = -1;
+                    break;
+                case 8:
+                    /*dataset = wkt;*/
+                    
+                    tableHandlerWkt.filterTable(tableWkt, searchString);
+                    choice = -1;
+                    break;
+                default:
+                    std::cout << "Zly vyber!" << std::endl;
+                    choice = 0;
+                    break;
+                }
+            } while (choice != -1);
+        }
+        else if (menu == 0)
         {
             readerCsv reader;    
             
@@ -273,8 +386,14 @@ int main()
 
             hierarchyHandler.cleanUp();
 
-            
-            
+            tableHandlerCow.cleanUp(tableCow);
+            tableHandlerKam.cleanUp(tableKam);
+            tableHandlerNan.cleanUp(tableNan);
+            tableHandlerVic.cleanUp(tableVic);
+            tableHandlerVly.cleanUp(tableVly);
+            tableHandlerWhi.cleanUp(tableWhi);
+            tableHandlerWil.cleanUp(tableWil);
+            tableHandlerWkt.cleanUp(tableWkt);
             
             break;
         }
