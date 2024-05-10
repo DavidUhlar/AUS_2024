@@ -315,10 +315,7 @@ namespace ds::adt {
 	template<typename K, typename T, typename SequenceType>
 	bool SequenceTable<K, T, SequenceType>::tryFind(K key, T*& data)
 	{
-		// TODO 10 hot
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
-
+		
 
 		BlockType* block = this->findBlockWithKey(key);
 		if (block == nullptr)
@@ -352,9 +349,7 @@ namespace ds::adt {
 	template<typename K, typename T, typename SequenceType>
 	typename SequenceType::BlockType* UnsortedSequenceTable<K, T, SequenceType>::findBlockWithKey(K key)
 	{
-		// TODO 10 hot
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 
 		return this->getSequence()->findBlockWithProperty([&key](typename SequenceType::BlockType* b) -> bool {
 			return key == b->data_.key_;
@@ -367,9 +362,7 @@ namespace ds::adt {
 	template<typename K, typename T>
 	void UnsortedImplicitSequenceTable<K, T>::insert(K key, T data)
 	{
-		// TODO 10 hot
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 
 		if (this->contains(key))
 		{
@@ -384,9 +377,7 @@ namespace ds::adt {
 	template<typename K, typename T>
 	T UnsortedImplicitSequenceTable<K, T>::remove(K key)
 	{
-		// TODO 10 hot
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 
 		BlockType* block = this->findBlockWithKey(key);
 		if (block == nullptr)
@@ -413,9 +404,7 @@ namespace ds::adt {
 	template<typename K, typename T>
 	void UnsortedExplicitSequenceTable<K, T>::insert(K key, T data)
 	{
-		// TODO 10 hot
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 
 		if (this->contains(key))
 		{
@@ -429,9 +418,7 @@ namespace ds::adt {
 	template<typename K, typename T>
 	T UnsortedExplicitSequenceTable<K, T>::remove(K key)
 	{
-		// TODO 10 hot
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 
 		BlockType* block = this->findBlockWithKey(key);
 		if (block == nullptr)
@@ -459,9 +446,7 @@ namespace ds::adt {
 	template<typename K, typename T>
 	void SortedSequenceTable<K, T>::insert(K key, T data)
 	{
-		// TODO 10 hot
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 		TableItem<K, T>* tableData;
 		if (this->isEmpty())
 		{
@@ -486,9 +471,7 @@ namespace ds::adt {
 	template<typename K, typename T>
 	T SortedSequenceTable<K, T>::remove(K key)
 	{
-		// TODO 10 hot
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 		BlockType* blockWithKey = nullptr;
 
 		if (!this->tryFindBlockWithKey(key, 0, this->size(), blockWithKey))
@@ -518,9 +501,7 @@ namespace ds::adt {
 	template<typename K, typename T>
 	bool SortedSequenceTable<K, T>::tryFindBlockWithKey(K key, size_t firstIndex, size_t lastIndex, BlockType*& lastBlock)
 	{
-		// TODO 10 hot
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 
 		if (this->isEmpty())
 		{
@@ -645,9 +626,7 @@ namespace ds::adt {
 	template <typename K, typename T>
 	void HashTable<K, T>::insert(K key, T data)
 	{
-		// TODO 11
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 		size_t index = hashFunction_(key) % primaryRegion_->size();
 		SynonymTable* synonyms = primaryRegion_->access(index)->data_;
 		if (!synonyms)
@@ -662,9 +641,7 @@ namespace ds::adt {
 	template <typename K, typename T>
 	bool HashTable<K, T>::tryFind(K key, T*& data)
 	{
-		// TODO 11
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 		size_t index = hashFunction_(key) % primaryRegion_->size();
 		SynonymTable* synonyms = primaryRegion_->access(index)->data_;
 		if (!synonyms)
@@ -677,9 +654,7 @@ namespace ds::adt {
 	template <typename K, typename T>
 	T HashTable<K, T>::remove(K key)
 	{
-		// TODO 11
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 		size_t index = hashFunction_(key) % primaryRegion_->size();
 		SynonymTable* synonyms = primaryRegion_->access(index)->data_;
 		if (!synonyms)
@@ -731,9 +706,7 @@ namespace ds::adt {
 	template <typename K, typename T>
 	auto HashTable<K, T>::HashTableIterator::operator++() -> HashTableIterator&
 	{
-		// TODO 11
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 		++(*synonymIterator_);
 		SynonymTableIterator oldIt = *synonymIterator_;
 		if (!(oldIt != (**tablesCurrent_)->end()))
@@ -839,9 +812,7 @@ namespace ds::adt {
 	template<typename K, typename T, typename BlockType>
 	void GeneralBinarySearchTree<K, T, BlockType>::insert(K key, T data)
 	{
-		// TODO 11
-		// po implementacii vymazte vyhodenie vynimky!
-		///throw std::runtime_error("Not implemented yet");
+		
 
 		BVSNodeType* newNode = nullptr;
 		if (this->isEmpty())
@@ -866,9 +837,7 @@ namespace ds::adt {
 	template<typename K, typename T, typename BlockType>
 	bool GeneralBinarySearchTree<K, T, BlockType>::tryFind(K key, T*& data)
 	{
-		// TODO 11 hot
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 
 		BVSNodeType* node = nullptr;
 		if (!this->tryFindNodeWithKey(key, node))
@@ -882,9 +851,7 @@ namespace ds::adt {
 	template<typename K, typename T, typename BlockType>
 	T GeneralBinarySearchTree<K, T, BlockType>::remove(K key)
 	{
-		// TODO 11 hot
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 		BVSNodeType* node = nullptr;
 		if (!this->tryFindNodeWithKey(key, node))
 		{
@@ -934,9 +901,7 @@ namespace ds::adt {
 	template<typename K, typename T, typename BlockType>
 	void GeneralBinarySearchTree<K, T, BlockType>::removeNode(BVSNodeType* node)
 	{
-		// TODO 11
-		// po implementacii vymazte vyhodenie vynimky!
-		//throw std::runtime_error("Not implemented yet");
+		
 
 		const ds::amt::ExplicitHierarchyBlock<BlockType>& nodeCon = *node;
 		BVSNodeType* parent = this->getHierarchy()->accessParent(*node);
@@ -956,7 +921,7 @@ namespace ds::adt {
 			{
 				const ds::amt::BinaryExplicitHierarchyBlock<BlockType>* par = this->getHierarchy()->accessParent(*node);
 				if (node->parent_ != nullptr && this->getHierarchy()->accessLeftSon(*par) == node)
-					//if (this->getHierarchy()->isLeftSon(nodeCon))
+					
 				{
 					this->getHierarchy()->removeLeftSon(*parent);
 				}
@@ -1017,13 +982,11 @@ namespace ds::adt {
 		size_ = 0;
 	}
 
-	//skuska
+	
 	template<typename K, typename T, typename BlockType>
 	bool GeneralBinarySearchTree<K, T, BlockType>::tryFindNodeWithKey(K key, BVSNodeType*& node) const
 	{
-		// TODO 11 hot
-		// po implementacii vymazte vyhodenie vynimky!
-	   // throw std::runtime_error("Not implemented yet");
+		
 		if (this->isEmpty())
 		{
 			return false;

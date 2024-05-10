@@ -37,8 +37,19 @@ public:
             }
             else {
                 
+                //ds::amt::ImplicitSequence<Zastavka*>* value;
+                //auto existingKey = tableOfStops.tryFind(tableKey, &value);
+
+
+
                 auto existingKey = tableOfStops.find(tableKey);
                 existingKey->insertLast().data_ = data;
+
+                /*if (value)
+                {
+                    value.insertLast().data_ = data;
+                }*/
+                
                 
             }
 
