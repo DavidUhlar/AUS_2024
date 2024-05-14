@@ -10,6 +10,7 @@
 #include "DruhaUroven.h"
 #include <libds/heap_monitor.h>
 #include "TretiaUroven.h"
+#include "StvrtaUroven.h"
 
 int main()
 {
@@ -249,18 +250,105 @@ int main()
 
 
 
+            int menuPredikatov;
+            std::cout << "" << std::endl;
+            std::cout << "1 StartsWith" << std::endl;
+            std::cout << "2 Contains" << std::endl;
+            //std::cout << "0 exit" << std::endl;
 
 
+            std::cout << "Zadaj cislo volby: ";
+            std::cin >> menuPredikatov;
 
-            std::cout << "\n-------------------------" << std::endl;
-            std::cout << "filter start: " << filteredStarts.size() << std::endl;
-            busAlgoritmus.printSequence(filteredStarts);
-            std::cout << "\n------------------------- " << std::endl;
-            std::cout << "filter obsahuje: " << filteredContains.size() << std::endl;
-            busAlgoritmus.printSequence(filteredContains);
+            switch (menuPredikatov) {
+            case 1:
+
+                std::cout << "\n-------------------------" << std::endl;
+                std::cout << "filter start: " << filteredStarts.size() << std::endl;
+                busAlgoritmus.printSequence(filteredStarts);
+                std::cout << "\n " << std::endl;
+                break;
+            case 2:
+                std::cout << "\n------------------------- " << std::endl;
+                std::cout << "filter obsahuje: " << filteredContains.size() << std::endl;
+                busAlgoritmus.printSequence(filteredContains);
+                std::cout << "\n " << std::endl;
+                
+                break;
+            default:
+                std::cout << "\n-------------------------" << std::endl;
+                std::cout << "filter start: " << filteredStarts.size() << std::endl;
+                busAlgoritmus.printSequence(filteredStarts);
+                std::cout << "\n------------------------- " << std::endl;
+                std::cout << "filter obsahuje: " << filteredContains.size() << std::endl;
+                busAlgoritmus.printSequence(filteredContains);
+                std::cout << "\n " << std::endl;
+                break;
+            }
+
+
+            
+
+
+            SortComparators comparators;
+            
             std::cout << "\n " << std::endl;
+            
+
+            int menuKomparatov;
+            std::cout << "Vyber moznost:" << std::endl;
+            std::cout << "1 triedit podla abecedy" << std::endl;
+            std::cout << "2 triedit podla spoluhlasok" << std::endl;
+            std::cout << "0 exit" << std::endl;
 
 
+            std::cout << "Zadaj cislo volby: ";
+            std::cin >> menuKomparatov;
+
+
+            switch (menuKomparatov) {
+            case 0:
+                break;
+            case 1:
+                std::cout << "\n------------------------- " << std::endl;
+                std::cout << "sort abeceda" << std::endl;
+                std::cout << "\n " << std::endl;
+                if (menuPredikatov == 1)
+                {
+                    comparators.compareAlphabetical(filteredStarts);
+                    busAlgoritmus.printSequence(filteredStarts);
+                }
+                else 
+                {
+                    comparators.compareAlphabetical(filteredContains);
+                    busAlgoritmus.printSequence(filteredContains);
+                }
+                break;
+            case 2:
+                std::cout << "\n------------------------- " << std::endl;
+                std::cout << "sort spoluhlasky" << std::endl;
+                std::cout << "\n " << std::endl;
+                if (menuPredikatov == 2)
+                {
+                    comparators.compareConsonantCount(filteredContains);
+                    busAlgoritmus.printSequence(filteredContains);
+                }
+                else
+                {
+                    comparators.compareConsonantCount(filteredStarts);
+                    busAlgoritmus.printSequence(filteredStarts);
+                }
+                break;
+            }
+            
+            std::cout << "\n " << std::endl;
+            //std::cout << comparators.countConsonants("YOSEMIte") << std::endl;
+            /*comparators.compareAlphabetical(filteredContains);
+            busAlgoritmus.printSequence(filteredContains);*/
+            
+            //std::cout << comparators.getCharPosition('c') << std::endl;
+            
+            //busAlgoritmus.printSequence(filteredContains);
         }
         else if (menu == 2)
         {
@@ -401,5 +489,5 @@ int main()
     
     return 0;
     
-
+    
 }

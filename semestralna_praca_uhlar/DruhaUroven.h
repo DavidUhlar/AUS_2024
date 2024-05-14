@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <libds/heap_monitor.h>
+#include "StvrtaUroven.h"
 
 class HierarchyNode
 {
@@ -8,7 +9,7 @@ public:
 
 
 
-    std::string getName() const { return name_; }
+    std::string getStopName() const { return name_; }
     Zastavka* getZastavka() const { return zastavka_; }
     bool getIsZastavka() { return isZastavka_; }
 
@@ -134,18 +135,18 @@ public:
             std::cout << "\n------------------------- " << std::endl;
             
             auto systemBlock = hierarchy_.accessSon(*root, k);
-            std::cout << "\n " << systemBlock->data_->getName() << std::endl;
+            std::cout << "\n " << systemBlock->data_->getStopName() << std::endl;
             
             
                 for (size_t i = 0; i < systemBlock->sons_->size(); i++) {
                     auto muniBlock = hierarchy_.accessSon(*systemBlock, i);
                     
                         std::cout << "\n---------------------------------------------------------------------------------------- " << std::endl;
-                        std::cout << "zastavka tatko " << i << ": " << muniBlock->data_->getName() << std::endl;
+                        std::cout << "zastavka tatko " << i << ": " << muniBlock->data_->getStopName() << std::endl;
 
                         for (size_t j = 0; j < muniBlock->sons_->size(); j++) {
                             auto stopBlock = hierarchy_.accessSon(*muniBlock, j);
-                            std::cout << "synak " << j << ": " << stopBlock->data_->getName() << std::endl;
+                            std::cout << "synak " << j << ": " << stopBlock->data_->getStopName() << std::endl;
                         }
                 }
         }
@@ -187,11 +188,11 @@ public:
             else if (actualPosition->parent_->data_ == nullptr) {
                 std::cout << "Root hierarchy" << std::endl;
             }
-            else if (actualPosition->parent_->data_->getName() == "") {
+            else if (actualPosition->parent_->data_->getStopName() == "") {
                 std::cout << "Root hierarchy" << std::endl;
             }
             else {
-                std::cout << actualPosition->parent_->data_->getName() << std::endl;
+                std::cout << actualPosition->parent_->data_->getStopName() << std::endl;
             }
             std::cout << "\n------------------------------------------------------ " << std::endl;
             
@@ -206,7 +207,7 @@ public:
             }
             else 
             {
-                std::cout << actualPosition->data_->getName() << std::endl;
+                std::cout << actualPosition->data_->getStopName() << std::endl;
             }
             std::cout << "\n------------------------------------------------------ " << std::endl;
 
@@ -229,7 +230,7 @@ public:
                 int indexSon;
                 for (size_t i = 0; i < actualPosition->sons_->size(); i++)
                 {
-                    std::cout << i << " " << actualPosition->sons_->access(i)->data_->data_->getName() << std::endl;
+                    std::cout << i << " " << actualPosition->sons_->access(i)->data_->data_->getStopName() << std::endl;
                 }
                 std::cout << "\n-------------------------------------- " << std::endl;
                 std::cout << "Vyber index: " << std::endl;
@@ -276,7 +277,7 @@ public:
                     busStopManager.filterAndInsert(currentPositionStart_, hierarchy_.end(), filteredSequence,
                         [predicateString](HierarchyNode* node) {
                             if (node) {
-                                std::string stopName = node->getName();
+                                std::string stopName = node->getStopName();
                                 if (!stopName.empty()) {
                                     return stopName.find(predicateString) == 0;
                                 }
@@ -288,7 +289,7 @@ public:
                     busStopManager.filterAndInsert(currentPositionStart_, hierarchy_.end(), filteredSequence,
                         [predicateString](HierarchyNode* node) {
                             if (node) {
-                                std::string stopName = node->getName();
+                                std::string stopName = node->getStopName();
                                 if (!stopName.empty()) {
                                     return stopName.find(predicateString) != std::string::npos;
                                 }
@@ -300,12 +301,71 @@ public:
                 std::cout << "\n-------------------------------------- " << std::endl;
                 for (auto i = filteredSequence.begin(); i != filteredSequence.end(); ++i) {
 
-                    std::cout << j << ".     " << (*i)->getName() << std::endl;
+                    std::cout << j << ".     " << (*i)->getStopName() << std::endl;
 
                     j++;
 
                 }
                 std::cout << "\n-------------------------------------- " << std::endl;
+
+                SortComparators comparators;
+
+                int menuKomparatov;
+                std::cout << "Vyber moznost:" << std::endl;
+                std::cout << "1 triedit podla abecedy" << std::endl;
+                std::cout << "2 triedit podla spoluhlasok" << std::endl;
+                std::cout << "0 exit" << std::endl;
+
+
+                std::cout << "Zadaj cislo volby: ";
+                std::cin >> menuKomparatov;
+
+                j = 1;
+                switch (menuKomparatov) {
+                case 0:
+                    break;
+                case 1:
+                    std::cout << "\n------------------------- " << std::endl;
+                    std::cout << "sort abeceda" << std::endl;
+                    std::cout << "\n " << std::endl;
+                    
+                    comparators.compareAlphabetical(filteredSequence);
+
+                    
+                    std::cout << "\n-------------------------------------- " << std::endl;
+                    for (auto i = filteredSequence.begin(); i != filteredSequence.end(); ++i) {
+
+                        std::cout << j << ".     " << (*i)->getStopName() << std::endl;
+
+                        j++;
+
+                    }
+                    std::cout << "\n-------------------------------------- " << std::endl;
+                    
+                    
+                    break;
+                case 2:
+                    std::cout << "\n------------------------- " << std::endl;
+                    std::cout << "sort spoluhlasky" << std::endl;
+                    std::cout << "\n " << std::endl;
+                    
+                    comparators.compareConsonantCount(filteredSequence);
+                    
+                    std::cout << "\n-------------------------------------- " << std::endl;
+                    for (auto i = filteredSequence.begin(); i != filteredSequence.end(); ++i) {
+
+                        std::cout << j << ".     " << (*i)->getStopName() << std::endl;
+
+                        j++;
+
+                    }
+                    
+                    
+                    std::cout << "\n-------------------------------------- " << std::endl;
+                    break;
+                }
+
+                std::cout << "\n " << std::endl;
             }
             if (indexMenu == 3)
             {

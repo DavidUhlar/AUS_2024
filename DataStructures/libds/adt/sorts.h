@@ -49,7 +49,7 @@ namespace ds::adt
     {
     public:
         void sort(amt::ImplicitSequence<T>& is, std::function<bool(const T&, const T&)> compare) override;
-
+        
     private:
         void quick(amt::ImplicitSequence<T>& is, std::function<bool(const T&, const T&)> compare, size_t min, size_t max);
     };
@@ -143,7 +143,7 @@ namespace ds::adt
         }
         while (swapped);
     }
-
+    
     template<typename T>
     void QuickSort<T>::sort(amt::ImplicitSequence<T>& is, std::function<bool(const T&, const T&)> compare)
     {
@@ -156,10 +156,6 @@ namespace ds::adt
     template<typename T>
     void QuickSort<T>::quick(amt::ImplicitSequence<T>& is, std::function<bool(const T&, const T&)> compare, size_t min, size_t max)
     {
-        // TODO 12
-        // po implementacii vymazte vyhodenie vynimky!
-        //throw std::runtime_error("Not implemented yet");
-
         size_t pivotIndex = min + (max - min) / 2;
         T pivot = is.access(pivotIndex)->data_;
         size_t leftIndex = min;
@@ -186,16 +182,16 @@ namespace ds::adt
                 }
             }
         }
+
         if (min < rightIndex)
         {
             this->quick(is, compare, min, rightIndex);
-
         }
+
 
         if (leftIndex < max)
         {
             this->quick(is, compare, leftIndex, max);
-
         }
     }
 
