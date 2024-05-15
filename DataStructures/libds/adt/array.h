@@ -352,9 +352,7 @@ namespace ds::adt {
     template<typename T>
     bool CompactMatrix<T>::validateIndices(long long index1, long long index2) const
     {
-        // TODO 07
-        // po implementacii vymazte vyhodenie vynimky!
-        //throw std::runtime_error("Not implemented yet");
+        
         return index1 >= this->dimension1_.getBase() &&
             index1 < this->dimension1_.getBase() + this->dimension1_.getSize() &&
             index2 >= this->dimension2_.getBase() &&
@@ -364,9 +362,7 @@ namespace ds::adt {
     template<typename T>
     size_t CompactMatrix<T>::mapIndices(long long index1, long long index2) const
     {
-        // TODO 07
-        // po implementacii vymazte vyhodenie vynimky!
-        //throw std::runtime_error("Not implemented yet");
+        
         return (index1 - this->dimension1_.getBase())
             * this->dimension2_.getSize() + (index2 - this->dimension2_.getBase());
     }

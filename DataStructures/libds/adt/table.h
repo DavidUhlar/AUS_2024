@@ -369,9 +369,7 @@ namespace ds::adt {
 			this->error("UnsortedImplicitSequenceTable<K, T>::insert : Key is present in table");
 		}
 		this->getSequence()->insertLast().data_ = { key, data };
-		//TableItem<K, T>* item = this->getSequence()->insertLast().data_;
-		//item->key = key;
-		//item->data_ = data;
+		
 	}
 
 	template<typename K, typename T>

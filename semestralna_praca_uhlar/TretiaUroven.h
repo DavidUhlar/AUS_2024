@@ -8,7 +8,7 @@ class TableHandler
 {
 private:
 
-    //ds::amt::MultiWayExplicitHierarchy<HierarchyNode*> hierarchy_;
+    
     ds::amt::ImplicitSequence<ds::amt::ImplicitSequence<Zastavka*>*>* tableSequence;
 
 public:

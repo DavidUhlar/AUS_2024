@@ -398,10 +398,9 @@ int main()
                 case 1:
 
                     /*dataset = cow;*/
-                    //tableX = tableHandler.loadTable(cow.begin(), cow.end());
-                    //tableX = tableHandler.loadTable(nan.begin(), nan.end(), searchString);
+                    
                     tableHandlerCow.filterTable(tableCow, searchString);
-                    //tableHandler.cleanUp(tableX);
+                    
                     choice = -1;
                     break;
                 case 2:
