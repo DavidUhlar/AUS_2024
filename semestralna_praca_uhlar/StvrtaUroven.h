@@ -26,7 +26,6 @@ public:
 
         ds::adt::QuickSort<TypTemplate*> quickSorter;
         
-        //ds::adt::BubbleSort<TypTemplate*> quickSorter;
         quickSorter.sort(sequenceForSort, [&](TypTemplate* a, TypTemplate* b) {
 
             std::size_t len1 = a->getStopName().length();
@@ -79,7 +78,6 @@ public:
             return false;
             
         });
-
     }
 
     int countConsonants(std::string s) {
@@ -97,7 +95,7 @@ public:
     void compareConsonantCount(ds::amt::ImplicitSequence<TypTemplate*>& sequenceForSort) {
         ds::adt::QuickSort<TypTemplate*> quickSorter;
 
-        //ds::adt::BubbleSort<TypTemplate*> quickSorter;
+        
         quickSorter.sort(sequenceForSort, [&](TypTemplate* a, TypTemplate* b) {
 
             std::string string1 = a->getStopName();

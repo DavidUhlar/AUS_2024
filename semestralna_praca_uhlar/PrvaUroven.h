@@ -121,23 +121,10 @@ public:
 
 
 
-class BusStopManager
+class BusStopManagerAlgoritmus
 {
 public:
 
-    /*std::string splitString(std::string& input, int columnIndex, char delimiter) {
-        std::stringstream ss(input);
-        std::string columnValue;
-        for (int i = 0; i <= columnIndex; ++i) {
-            if (!std::getline(ss, columnValue, delimiter)) {
-                std::cerr << "split failed" << std::endl;
-                return "";
-            }
-        }
-        return columnValue;
-    }*/
-    
-    
     
     template<typename InputIterator, typename OutputContainer, typename Predicate>
     void filterAndInsert(InputIterator begin, InputIterator end, OutputContainer& outputSequence, Predicate predicate) {
@@ -152,9 +139,12 @@ public:
         }
     }
     
-
-
     
+};
+
+class BusStopManager {
+public:
+
     void printSequence(ds::amt::ImplicitSequence<Zastavka*>& sequence) {
         std::cout << "   ";
 
@@ -174,10 +164,11 @@ public:
 
     bool startsWithString(Zastavka* stop, std::string searchString) {
         return stop->getStopName().find(searchString) == 0;
-        
+
     };
     bool containsString(Zastavka* stop, std::string searchString) {
         return stop->getStopName().find(searchString) != std::string::npos;
 
     };
+
 };

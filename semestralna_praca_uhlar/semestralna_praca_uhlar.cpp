@@ -99,7 +99,8 @@ int main()
             std::getline(std::cin, searchString);
 
 
-            BusStopManager busAlgoritmus;
+            BusStopManagerAlgoritmus busAlgoritmus;
+            BusStopManager busAlgoritmusHelper;
 
             int choice;
             do {
@@ -123,15 +124,15 @@ int main()
 
                     /*dataset = cow;*/
                     busAlgoritmus.filterAndInsert(cow.begin(), cow.end(), filteredStarts,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.startsWithString(stop, searchString);
+                            return busAlgoritmusHelper.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(cow.begin(), cow.end(), filteredContains,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.containsString(stop, searchString);
+                            return busAlgoritmusHelper.containsString(stop, searchString);
                         });
                     choice = -1;
 
@@ -139,105 +140,105 @@ int main()
                 case 2:
                     /*dataset = kam;*/
                     busAlgoritmus.filterAndInsert(kam.begin(), kam.end(), filteredStarts,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.startsWithString(stop, searchString);
+                            return busAlgoritmusHelper.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(kam.begin(), kam.end(), filteredContains,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.containsString(stop, searchString);
+                            return busAlgoritmusHelper.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 3:
                     /*dataset = nan;*/
                     busAlgoritmus.filterAndInsert(nan.begin(), nan.end(), filteredStarts,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.startsWithString(stop, searchString);
+                            return busAlgoritmusHelper.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(nan.begin(), nan.end(), filteredContains,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.containsString(stop, searchString);
+                            return busAlgoritmusHelper.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 4:
                     /*dataset = vic;*/
                     busAlgoritmus.filterAndInsert(vic.begin(), vic.end(), filteredStarts,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.startsWithString(stop, searchString);
+                            return busAlgoritmusHelper.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(vic.begin(), vic.end(), filteredContains,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.containsString(stop, searchString);
+                            return busAlgoritmusHelper.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 5:
                     /*dataset = vly;*/
                     busAlgoritmus.filterAndInsert(vly.begin(), vly.end(), filteredStarts,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.startsWithString(stop, searchString);
+                            return busAlgoritmusHelper.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(vly.begin(), vly.end(), filteredContains,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.containsString(stop, searchString);
+                            return busAlgoritmusHelper.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 6:
                     /*dataset = whi;*/
                     busAlgoritmus.filterAndInsert(whi.begin(), whi.end(), filteredStarts,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.startsWithString(stop, searchString);
+                            return busAlgoritmusHelper.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(whi.begin(), whi.end(), filteredContains,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.containsString(stop, searchString);
+                            return busAlgoritmusHelper.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 7:
                     /*dataset = wil;*/
                     busAlgoritmus.filterAndInsert(wil.begin(), wil.end(), filteredStarts,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.startsWithString(stop, searchString);
+                            return busAlgoritmusHelper.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(wil.begin(), wil.end(), filteredContains,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.containsString(stop, searchString);
+                            return busAlgoritmusHelper.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
                 case 8:
                     /*dataset = wkt;*/
                     busAlgoritmus.filterAndInsert(wkt.begin(), wkt.end(), filteredStarts,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.startsWithString(stop, searchString);
+                            return busAlgoritmusHelper.startsWithString(stop, searchString);
                         });
 
                     busAlgoritmus.filterAndInsert(wkt.begin(), wkt.end(), filteredContains,
-                        [&busAlgoritmus, searchString](Zastavka* stop) {
+                        [&busAlgoritmusHelper, searchString](Zastavka* stop) {
 
-                            return busAlgoritmus.containsString(stop, searchString);
+                            return busAlgoritmusHelper.containsString(stop, searchString);
                         });
                     choice = -1;
                     break;
@@ -265,23 +266,23 @@ int main()
 
                 std::cout << "\n-------------------------" << std::endl;
                 std::cout << "filter start: " << filteredStarts.size() << std::endl;
-                busAlgoritmus.printSequence(filteredStarts);
+                busAlgoritmusHelper.printSequence(filteredStarts);
                 std::cout << "\n " << std::endl;
                 break;
             case 2:
                 std::cout << "\n------------------------- " << std::endl;
                 std::cout << "filter obsahuje: " << filteredContains.size() << std::endl;
-                busAlgoritmus.printSequence(filteredContains);
+                busAlgoritmusHelper.printSequence(filteredContains);
                 std::cout << "\n " << std::endl;
                 
                 break;
             default:
                 std::cout << "\n-------------------------" << std::endl;
                 std::cout << "filter start: " << filteredStarts.size() << std::endl;
-                busAlgoritmus.printSequence(filteredStarts);
+                busAlgoritmusHelper.printSequence(filteredStarts);
                 std::cout << "\n------------------------- " << std::endl;
                 std::cout << "filter obsahuje: " << filteredContains.size() << std::endl;
-                busAlgoritmus.printSequence(filteredContains);
+                busAlgoritmusHelper.printSequence(filteredContains);
                 std::cout << "\n " << std::endl;
                 break;
             }
@@ -316,12 +317,12 @@ int main()
                 if (menuPredikatov == 1)
                 {
                     comparators.compareAlphabetical(filteredStarts);
-                    busAlgoritmus.printSequence(filteredStarts);
+                    busAlgoritmusHelper.printSequence(filteredStarts);
                 }
                 else 
                 {
                     comparators.compareAlphabetical(filteredContains);
-                    busAlgoritmus.printSequence(filteredContains);
+                    busAlgoritmusHelper.printSequence(filteredContains);
                 }
                 break;
             case 2:
@@ -331,31 +332,25 @@ int main()
                 if (menuPredikatov == 2)
                 {
                     comparators.compareConsonantCount(filteredContains);
-                    busAlgoritmus.printSequence(filteredContains);
+                    busAlgoritmusHelper.printSequence(filteredContains);
                 }
                 else
                 {
                     comparators.compareConsonantCount(filteredStarts);
-                    busAlgoritmus.printSequence(filteredStarts);
+                    busAlgoritmusHelper.printSequence(filteredStarts);
                 }
                 break;
             }
             
             std::cout << "\n " << std::endl;
-            //std::cout << comparators.countConsonants("YOSEMIte") << std::endl;
-            /*comparators.compareAlphabetical(filteredContains);
-            busAlgoritmus.printSequence(filteredContains);*/
             
-            //std::cout << comparators.getCharPosition('c') << std::endl;
-            
-            //busAlgoritmus.printSequence(filteredContains);
         }
         else if (menu == 2)
         {
 
 
 
-            std::cout << "\nmohutny " << hierarchyHandler.getHierarchy().size() << std::endl;
+            std::cout << "\nmohutnost hierarchie: " << hierarchyHandler.getHierarchy().size() << std::endl;
 
             hierarchyHandler.iterateHierarchy();
 
@@ -474,14 +469,14 @@ int main()
 
             hierarchyHandler.cleanUp();
 
-            tableHandlerCow.cleanUp(tableCow);
-            tableHandlerKam.cleanUp(tableKam);
-            tableHandlerNan.cleanUp(tableNan);
-            tableHandlerVic.cleanUp(tableVic);
-            tableHandlerVly.cleanUp(tableVly);
-            tableHandlerWhi.cleanUp(tableWhi);
-            tableHandlerWil.cleanUp(tableWil);
-            tableHandlerWkt.cleanUp(tableWkt);
+            tableHandlerCow.cleanUp();
+            tableHandlerKam.cleanUp();
+            tableHandlerNan.cleanUp();
+            tableHandlerVic.cleanUp();
+            tableHandlerVly.cleanUp();
+            tableHandlerWhi.cleanUp();
+            tableHandlerWil.cleanUp();
+            tableHandlerWkt.cleanUp();
             
             break;
         }

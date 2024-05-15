@@ -36,24 +36,13 @@ public:
                 tableOfStops.insert(tableKey, valueSequence);
             }
             else {
-                
-                //ds::amt::ImplicitSequence<Zastavka*>* value;
-                //auto existingKey = tableOfStops.tryFind(tableKey, &value);
-
-
 
                 auto existingKey = tableOfStops.find(tableKey);
                 existingKey->insertLast().data_ = data;
 
-                /*if (value)
-                {
-                    value.insertLast().data_ = data;
-                }*/
-                
                 
             }
 
-            
         }
         
         
@@ -85,8 +74,8 @@ public:
         std::cout << "\n" << std::endl;
     }
 
-    template<typename TableToClear>
-    void cleanUp(TableToClear table) {
+    
+    void cleanUp() {
         for (auto i = tableSequence->begin(); i != tableSequence->end(); ++i) {
             
             auto data = (*i);

@@ -165,7 +165,7 @@ public:
     }
 
     void iterateHierarchy() {
-        std::cout << " ROOT\n " << std::endl;
+        std::cout << " \n " << std::endl;
         ds::amt::MultiWayExplicitHierarchyBlock<HierarchyNode*>* actualPosition = hierarchy_.accessRoot();
         
         
@@ -251,7 +251,7 @@ public:
                 //predikat
                 int predicateChoice;
                 std::string predicateString;
-                BusStopManager busStopManager;
+                BusStopManagerAlgoritmus busStopManager;
                 do {
                     std::cout << "predikat:" << std::endl;
                     std::cout << "1.Starts" << std::endl;
