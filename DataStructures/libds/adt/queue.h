@@ -7,7 +7,8 @@
 namespace ds::adt {
 
     template <typename T>
-    class Queue : virtual public ADT
+    class Queue :
+        virtual public ADT
     {
     public:
         virtual void push(T element) = 0;
@@ -27,10 +28,11 @@ namespace ds::adt {
         ImplicitQueue(const ImplicitQueue& other);
         ImplicitQueue(size_t capacity);
 
+        size_t getCapacity() const;
+
         ADT& assign(const ADT& other) override;
         void clear() override;
         size_t size() const override;
-        bool isEmpty() const override;
         bool equals(const ADT& other) override;
 
         void push(T element) override;
@@ -51,7 +53,9 @@ namespace ds::adt {
     //----------
 
     template<typename T>
-    class ExplicitQueue : public Queue<T>, public ADS<T>
+    class ExplicitQueue :
+        public Queue<T>,
+        public ADS<T>
     {
     public:
         ExplicitQueue();
@@ -67,46 +71,41 @@ namespace ds::adt {
     //----------
 
     template<typename T>
-    ImplicitQueue<T>::ImplicitQueue() : ImplicitQueue(INIT_CAPACITY) {}
+    ImplicitQueue<T>::ImplicitQueue() :
+        ImplicitQueue(INIT_CAPACITY)
+    {
+    }
 
     template<typename T>
     ImplicitQueue<T>::ImplicitQueue(size_t capacity) :
         ADS<T>(new amt::CIS<T>(capacity, true)),
         insertionIndex_(0),
         removalIndex_(0),
-        size_(0) {}
+        size_(0)
+    {
+    }
+
+    template <typename T>
+    size_t ImplicitQueue<T>::getCapacity() const
+    {
+        return this->getSequence()->size();
+    }
 
     template<typename T>
     ImplicitQueue<T>::ImplicitQueue(const ImplicitQueue& other) :
         ADS<T>(new amt::CIS<T>(), other),
         insertionIndex_(other.insertionIndex_),
         removalIndex_(other.removalIndex_),
-        size_(other.size_) {}
+        size_(other.size_)
+    {
+    }
 
     template<typename T>
     ADT& ImplicitQueue<T>::assign(const ADT& other)
     {
-        const ImplicitQueue<T>* otherImplicitQueue = dynamic_cast<const ImplicitQueue<T>*>(&other);
-
-        if (!otherImplicitQueue) this->error("Other ADT is not an implicit queue!");
-
-        if (this != otherImplicitQueue)
-        {
-            if (this->getSequence()->size() < otherImplicitQueue->size()) this->error("Implicit queue has insufficient capacity!");
-
-            this->clear();
-            this->insertionIndex_ = this->getSequence()->indexOfNext(otherImplicitQueue->size() - 1);
-            this->size_ = otherImplicitQueue->size();
-            size_t otherRemovalIndex = otherImplicitQueue->removalIndex_;
-
-            for (size_t i = 0; i < otherImplicitQueue->size(); i++)
-            {
-                this->getSequence()->access(i)->data_ = otherImplicitQueue->getSequence()->access(otherRemovalIndex)->data_;
-                otherRemovalIndex = otherImplicitQueue->getSequence()->indexOfNext(otherRemovalIndex);
-            }
-        }
-        
-        return *this;
+        // TODO 09
+        // po implementacii vymazte vyhodenie vynimky!
+        throw std::runtime_error("Not implemented yet");
     }
 
     template<typename T>
@@ -123,76 +122,35 @@ namespace ds::adt {
     }
 
     template<typename T>
-    bool ImplicitQueue<T>::isEmpty() const
-    {
-        return this->size() == 0;
-    }
-
-    template<typename T>
     bool ImplicitQueue<T>::equals(const ADT& other)
     {
-        const ImplicitQueue<T>* otherImplicitQueue = dynamic_cast<const ImplicitQueue<T>*>(&other);
-
-        if (!otherImplicitQueue)
-        {
-            return false;
-        }
-
-        if (this == otherImplicitQueue)
-        {
-            return true;
-        }
-
-        if (this->size() != otherImplicitQueue->size())
-        {
-            return false;
-        }
-
-        size_t myIndex = this->removalIndex_;
-        size_t otherIndex = otherImplicitQueue->removalIndex_;
-
-        while (myIndex != this->removalIndex_)
-        {
-            if (this->getSequence()->access(myIndex)->data_ != otherImplicitQueue->getSequence()->access(otherIndex)->data_)
-            {
-                return false;
-            }
-
-            myIndex = this->getSequence()->indexOfNext(myIndex);
-            otherIndex = otherImplicitQueue->getSequence()->indexOfNext(otherIndex);
-        }
-
-        return true;
+        // TODO 09
+        // po implementacii vymazte vyhodenie vynimky!
+        throw std::runtime_error("Not implemented yet");
     }
 
     template<typename T>
     void ImplicitQueue<T>::push(T element)
     {
-        if (this->size() == this->getSequence()->size()) this->error("Queue is full!");
-
-        this->getSequence()->access(this->insertionIndex_)->data_ = element;
-        this->insertionIndex_ = this->getSequence()->indexOfNext(this->insertionIndex_);
-        this->size_++;
+        // TODO 09
+        // po implementacii vymazte vyhodenie vynimky!
+        throw std::runtime_error("Not implemented yet");
     }
 
     template<typename T>
     T& ImplicitQueue<T>::peek()
     {
-        if (this->isEmpty()) this->error("Queue is empty!");
-
-        return this->getSequence()->access(this->removalIndex_)->data_;
+        // TODO 09
+        // po implementacii vymazte vyhodenie vynimky!
+        throw std::runtime_error("Not implemented yet");
     }
 
     template<typename T>
     T ImplicitQueue<T>::pop()
     {
-        if (this->isEmpty()) this->error("Queue is empty!");
-
-        T retValue = this->getSequence()->access(this->removalIndex_)->data_;
-        this->removalIndex_ = this->getSequence()->indexOfNext(this->removalIndex_);
-        this->size_--;
-
-        return retValue;
+        // TODO 09
+        // po implementacii vymazte vyhodenie vynimky!
+        throw std::runtime_error("Not implemented yet");
     }
 
     template<typename T>
@@ -202,10 +160,16 @@ namespace ds::adt {
     }
 
     template<typename T>
-    ExplicitQueue<T>::ExplicitQueue() : ADS<T>(new amt::SinglyLS<T>()) {}
+    ExplicitQueue<T>::ExplicitQueue() :
+        ADS<T>(new amt::SinglyLS<T>())
+    {
+    }
 
     template<typename T>
-    ExplicitQueue<T>::ExplicitQueue(const ExplicitQueue& other) : ADS<T>(new amt::SinglyLS<T>(), other) {}
+    ExplicitQueue<T>::ExplicitQueue(const ExplicitQueue& other) :
+        ADS<T>(new amt::SinglyLS<T>(), other)
+    {
+    }
 
     template<typename T>
     void ExplicitQueue<T>::push(T element)

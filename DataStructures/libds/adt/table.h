@@ -810,56 +810,25 @@ namespace ds::adt {
 	template<typename K, typename T, typename BlockType>
 	void GeneralBinarySearchTree<K, T, BlockType>::insert(K key, T data)
 	{
-		
-
-		BVSNodeType* newNode = nullptr;
-		if (this->isEmpty())
-		{
-			newNode = &this->getHierarchy()->emplaceRoot();
-		}
-		else
-		{
-			BVSNodeType* nodeInRelation = this->findNodeWithRelation(key);
-			if (nodeInRelation->data_.key_ == key)
-			{
-				//this->error(" void GeneralBinarySearchTree<K, T, BlockType>::insert : key is present in table");
-			}
-			newNode = &this->insertNode(key, nodeInRelation);
-		}
-		newNode->data_.key_ = key;
-		newNode->data_.data_ = data;
-		++this->size_;
-		this->balanceTree(newNode);
+		// TODO 11
+		// po implementacii vymazte vyhodenie vynimky!
+		throw std::runtime_error("Not implemented yet");
 	}
 
 	template<typename K, typename T, typename BlockType>
 	bool GeneralBinarySearchTree<K, T, BlockType>::tryFind(K key, T*& data)
 	{
-		
-
-		BVSNodeType* node = nullptr;
-		if (!this->tryFindNodeWithKey(key, node))
-		{
-			return false;
-		}
-		data = &node->data_.data_;
-		return true;
+		// TODO 11
+		// po implementacii vymazte vyhodenie vynimky!
+		throw std::runtime_error("Not implemented yet");
 	}
 
 	template<typename K, typename T, typename BlockType>
 	T GeneralBinarySearchTree<K, T, BlockType>::remove(K key)
 	{
-		
-		BVSNodeType* node = nullptr;
-		if (!this->tryFindNodeWithKey(key, node))
-		{
-			this->error("T GeneralBinarySearchTree<K, T, BlockType>::remove : item with key is not present in table");
-		}
-
-		T data = node->data_.data_;
-		this->removeNode(node);
-		--this->size_;
-		return data;
+		// TODO 11
+		// po implementacii vymazte vyhodenie vynimky!
+		throw std::runtime_error("Not implemented yet");
 	}
 
 	template <typename K, typename T, typename BlockType>
@@ -899,77 +868,9 @@ namespace ds::adt {
 	template<typename K, typename T, typename BlockType>
 	void GeneralBinarySearchTree<K, T, BlockType>::removeNode(BVSNodeType* node)
 	{
-		
-
-		const ds::amt::ExplicitHierarchyBlock<BlockType>& nodeCon = *node;
-		BVSNodeType* parent = this->getHierarchy()->accessParent(*node);
-		BVSNodeType* previousInOrder = node->left_;
-		BVSNodeType* son = this->getHierarchy()->hasLeftSon(*node)
-			? node->left_
-			: node->right_;
-
-		switch (this->getHierarchy()->degree(*node))
-		{
-		case 0:
-			if (this->getHierarchy()->isRoot(*node))
-			{
-				this->getHierarchy()->clear();
-			}
-			else
-			{
-				const ds::amt::BinaryExplicitHierarchyBlock<BlockType>* par = this->getHierarchy()->accessParent(*node);
-				if (node->parent_ != nullptr && this->getHierarchy()->accessLeftSon(*par) == node)
-					
-				{
-					this->getHierarchy()->removeLeftSon(*parent);
-				}
-				else
-				{
-					this->getHierarchy()->removeRightSon(*parent);
-				}
-			}
-			break;
-		case 1:
-			if (node->left_ == son)
-			{
-				this->getHierarchy()->changeLeftSon(*node, nullptr);
-			}
-			else
-			{
-				this->getHierarchy()->changeRightSon(*node, nullptr);
-			}
-
-			if (this->getHierarchy()->isRoot(*node))
-			{
-				this->getHierarchy()->clear();
-				this->getHierarchy()->changeRoot(son);
-			}
-			else
-			{
-				if (parent->left_ == node)
-				{
-					this->getHierarchy()->removeLeftSon(*parent);
-					this->getHierarchy()->changeLeftSon(*parent, son);
-				}
-				else
-				{
-					this->getHierarchy()->removeRightSon(*parent);
-					parent->right_ = son;
-					this->getHierarchy()->changeRightSon(*parent, son);
-				}
-			}
-			break;
-		case 2:
-			while (this->getHierarchy()->hasRightSon(*previousInOrder))
-			{
-				previousInOrder = previousInOrder->right_;
-			}
-			std::swap(node->data_, previousInOrder->data_);
-			this->removeNode(previousInOrder);
-			break;
-		default:
-			break;
-		}
+		// TODO 11
+		// po implementacii vymazte vyhodenie vynimky!
+		throw std::runtime_error("Not implemented yet");
 	}
 
 	template<typename K, typename T, typename BlockType>
@@ -985,36 +886,9 @@ namespace ds::adt {
 	bool GeneralBinarySearchTree<K, T, BlockType>::tryFindNodeWithKey(K key, BVSNodeType*& node) const
 	{
 		
-		if (this->isEmpty())
-		{
-			return false;
-		}
-		node = this->getHierarchy()->accessRoot();
-		while (node->data_.key_ != key && !this->getHierarchy()->isLeaf(*node)) {
-			if (key < node->data_.key_)
-			{
-				if (node->left_ != nullptr)
-				{
-					node = node->left_;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else
-			{
-				if (node->right_ != nullptr)
-				{
-					node = node->right_;
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-		return node->data_.key_ == key;
+		// TODO 11
+		// po implementacii vymazte vyhodenie vynimky!
+		throw std::runtime_error("Not implemented yet");
 	}
 
 	template<typename K, typename T, typename BlockType>
