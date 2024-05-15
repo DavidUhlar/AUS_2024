@@ -127,21 +127,9 @@ namespace ds::adt
     template<typename T>
     void BubbleSort<T>::sort(amt::ImplicitSequence<T>& is, std::function<bool(const T&, const T&)> compare)
     {
-        bool swapped;
-        do
-        {
-            swapped = false;
-            for (size_t i = 0; i < is.size() - 1; ++i)
-            {
-                if (compare(is.access(i + 1)->data_, is.access(i)->data_))
-                {
-                    using std::swap;
-                    swap(is.access(i + 1)->data_, is.access(i)->data_);
-                    swapped = true;
-                }
-            }
-        }
-        while (swapped);
+        // TODO 12
+        // po implementacii vymazte vyhodenie vynimky!
+        throw std::runtime_error("Not implemented yet");
     }
     
     template<typename T>

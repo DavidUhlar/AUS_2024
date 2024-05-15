@@ -1,7 +1,6 @@
 #pragma once
 
 #include <complexities/complexity_analyzer.h>
-#include <iterator>
 #include <list>
 #include <random>
 #include <vector>
@@ -18,12 +17,10 @@ namespace ds::utils
         explicit ListAnalyzer(const std::string& name);
 
     protected:
-        void beforeOperation(List& structure) override;
+        void growToSize(List& structure, size_t size) override;        
+
         size_t getRandomIndex() const;
         int getRandomData() const;
-
-    private:
-        void insertNElements(List& list, size_t n);
 
     private:
         std::default_random_engine rngData_;
@@ -33,7 +30,7 @@ namespace ds::utils
     };
 
     /**
-     * @brief Analyzes complexity of the insert operation.
+     * @brief Analyzes complexity of an insertion at the beginning.
      */
     template<class List>
     class ListInsertAnalyzer : public ListAnalyzer<List>
@@ -46,7 +43,7 @@ namespace ds::utils
     };
 
     /**
-     * @brief Analyzes complexity of the erase operation.
+     * @brief Analyzes complexity of an erasure at the beginning.
      */
     template<class List>
     class ListRemoveAnalyzer : public ListAnalyzer<List>
@@ -64,42 +61,35 @@ namespace ds::utils
     class ListsAnalyzer : public CompositeAnalyzer
     {
     public:
-        ListsAnalyzer() :
-            CompositeAnalyzer("Lists")
-        {
-            this->addAnalyzer(std::make_unique<ListInsertAnalyzer<std::vector<int>>>("vector-insert"));
-            this->addAnalyzer(std::make_unique<ListInsertAnalyzer<std::list<int>>>("list-insert"));
-            this->addAnalyzer(std::make_unique<ListRemoveAnalyzer<std::vector<int>>>("vector-remove"));
-            this->addAnalyzer(std::make_unique<ListRemoveAnalyzer<std::list<int>>>("list-remove"));
-        }
+        ListsAnalyzer();
     };
 
+    //----------
 
     template<class List>
     ListAnalyzer<List>::ListAnalyzer(const std::string& name) :
-        ComplexityAnalyzer<List>(name, [this](List& list, size_t size)
-            {
-                for (int i = 0; i < size; i++)
-                {
-                    list.push_back(this->getRandomData());
-                }
-            }),
-        //                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        // TODO 01 Namiesto defaultne vytvorenÈho - pr·zdneho - funkËnÈho objektu je potrebnÈ
-        //         parameter spr·vne inicializovaù!
-        rngData_(std::random_device()()),
-        rngIndex_(std::random_device()()),
+        ComplexityAnalyzer<List>(name),
+        rngData_(144),
+        rngIndex_(144),
         index_(0),
         data_(0)
     {
+        ComplexityAnalyzer<List>::registerBeforeOperation([this](List& list)
+            {
+                std::uniform_int_distribution<size_t> indexDist(0, list.size() - 1);
+                index_ = indexDist(rngIndex_);
+                data_ = rngData_();
+            });
     }
 
-    template<class List>
-    void ListAnalyzer<List>::beforeOperation(List& structure)
+    template <class List>
+    void ListAnalyzer<List>::growToSize(List& structure, size_t size)
     {
-        std::uniform_int_distribution<size_t> indexDist(0, structure.size() - 1);
-        index_ = indexDist(this->rngIndex_);
-        data_ = rngData_();
+        const size_t toInsert = size - structure.size();
+        for (size_t i = 0; i < toInsert; ++i)
+        {
+            structure.push_back(rngData_());
+        }
     }
 
     template<class List>
@@ -114,14 +104,7 @@ namespace ds::utils
         return data_;
     }
 
-    template<class List>
-    void ListAnalyzer<List>::insertNElements(List& list, size_t n)
-    {
-        for (size_t i = 0; i < n; ++i)
-        {
-            list.push_back(rngData_());
-        }
-    }
+    //----------
 
     template <class List>
     ListInsertAnalyzer<List>::ListInsertAnalyzer(const std::string& name) :
@@ -132,10 +115,11 @@ namespace ds::utils
     template <class List>
     void ListInsertAnalyzer<List>::executeOperation(List& structure)
     {
-        //Cviko 1
-        structure.push_back(this->getRandomData());
-        //throw std::runtime_error("Not implemented yet");
+        auto data = this->getRandomData();
+        structure.insert(structure.begin(), data);
     }
+
+    //----------
 
     template <class List>
     ListRemoveAnalyzer<List>::ListRemoveAnalyzer(const std::string& name) :
@@ -146,12 +130,17 @@ namespace ds::utils
     template <class List>
     void ListRemoveAnalyzer<List>::executeOperation(List& structure)
     {
-        // TODO 01
-        // po implementacii vymazte vyhodenie vynimky!
-        //throw std::runtime_error("Not implemented yet");
-        //auto Position = std::next(structure.begin(), this->getRandomIndex());
-        //structure.erase(Position);
-
         structure.erase(structure.begin());
+    }
+
+    //----------
+
+    inline ListsAnalyzer::ListsAnalyzer() :
+        CompositeAnalyzer("Lists")
+    {
+        this->addAnalyzer(std::make_unique<ListInsertAnalyzer<std::vector<int>>>("vector-insert"));
+        this->addAnalyzer(std::make_unique<ListInsertAnalyzer<std::list<int>>>("list-insert"));
+        this->addAnalyzer(std::make_unique<ListRemoveAnalyzer<std::vector<int>>>("vector-remove"));
+        this->addAnalyzer(std::make_unique<ListRemoveAnalyzer<std::list<int>>>("list-remove"));
     }
 }

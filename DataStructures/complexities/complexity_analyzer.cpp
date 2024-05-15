@@ -8,11 +8,12 @@ namespace ds::utils
     {
     }
 
-
-    const std::string& utils::Analyzer::getName() const
+    const std::string& Analyzer::getName() const
     {
         return name_;
     }
+
+    //----------
 
     CompositeAnalyzer::CompositeAnalyzer(const std::string& name) :
         Analyzer(name)
@@ -68,6 +69,8 @@ namespace ds::utils
     {
         return analyzers_;
     }
+
+    //----------
 
     LeafAnalyzer::LeafAnalyzer(const std::string& name) :
         Analyzer(name),

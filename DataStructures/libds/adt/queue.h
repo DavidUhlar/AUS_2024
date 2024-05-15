@@ -71,7 +71,7 @@ namespace ds::adt {
     //----------
 
     template<typename T>
-    ImplicitQueue<T>::ImplicitQueue() :
+    ImplicitQueue<T>::ImplicitQueue():
         ImplicitQueue(INIT_CAPACITY)
     {
     }

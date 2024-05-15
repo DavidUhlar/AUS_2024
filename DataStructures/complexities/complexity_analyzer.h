@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <fstream>
 #include <functional>
-#include <map>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -74,7 +73,7 @@ namespace ds::utils
 
     private:
         static const size_t DEFAULT_REPLICATION_COUNT = 100;
-        static const size_t DEFAULT_STEP_SIZE = 10000;
+        static const size_t DEFAULT_STEP_SIZE = 10'000;
         static const size_t DEFAULT_STEP_COUNT = 10;
 
     private:
@@ -85,100 +84,176 @@ namespace ds::utils
         bool wasSuccessful_;
     };
 
+    /**
+     *  @brief Interface for a structure prototype factory.
+     *  @tparam Structure Type of the structure to create
+     */
+    template<class Structure>
+    class IPrototypeFactory
+    {
+    public:
+        virtual ~IPrototypeFactory() = default;
+
+    protected:
+        virtual Structure createPrototype() = 0;
+    };
+
+    /**
+     *  @brief Default implementation of the prototype factory.
+     *  @tparam Structure Type of the structure to create.
+     */
+    template<class Structure>
+    class PrototypeFactory : public IPrototypeFactory<Structure>
+    {
+    protected:
+        /**
+         *  @brief Returns default-constructed instance of @p Structure.
+         */
+        Structure createPrototype() override
+        {
+            return Structure();
+        }
+    };
 
     /**
      *  @brief Universal analyzer of an operation of any structure.
+     *  @tparam Structure Type of the structure to create.
      */
     template<class Structure>
-    class ComplexityAnalyzer : public LeafAnalyzer
+    class ComplexityAnalyzer :
+        public LeafAnalyzer,
+        public std::conditional_t<
+            std::is_default_constructible_v<Structure>,
+            PrototypeFactory<Structure>,
+            IPrototypeFactory<Structure>
+        >
     {
     public:
+        /**
+         *  @brief Runs the analysis.
+         */
         void analyze() override;
-        void analyze(Structure structurePrototype);
 
     protected:
-        ComplexityAnalyzer(
-            const std::string& name,
-            std::function<void(Structure&, size_t)> insertN
-        );
+        /**
+         *  @brief Constructs complexity analyzer with given name.
+         */
+        explicit ComplexityAnalyzer(const std::string& name);
 
-        virtual void beforeOperation(Structure& structure) {};
+        /**
+         *  @brief Must ensure that @p structure has size @p size after a call.
+         */
+        virtual void growToSize(Structure& structure, size_t size) = 0;
+
+        /**
+         *  @brief Executes the analyzed operation (and nothing else!).
+         */
         virtual void executeOperation(Structure& structure) = 0;
-        virtual void afterOperation(Structure& structure) {};
 
-        virtual void beforeRepliciation(Structure& structure) {};
-        virtual void afterRepliciation(Structure& structure) {};
+        /**
+         *  @brief Runs the analysis replications.
+         *  @param structurePrototype Prototype used to initialize the structure.
+         */
+        void runReplications(Structure structurePrototype);
+
+        /**
+         *  @brief Registers hook that is run before each call of @c executeOperation .
+         */
+        void registerBeforeOperation(std::function<void(Structure&)> op);
+
+        /**
+         *  @brief Registers hook that is run after each call of @c executeOperation .
+         */
+        void registerAfterOperation(std::function<void(Structure&)> op);
+
     private:
         using duration_t = std::chrono::nanoseconds;
 
     private:
-        void saveToCsvFile(const std::map<size_t, std::vector<duration_t>>& data) const;
+        void saveToCsvFile(
+            const std::vector<size_t>& sizes,
+            const std::vector<std::vector<duration_t>>& results
+        ) const;
 
     private:
-        std::function<void(Structure&, size_t)> insertN_;
+        std::function<void(Structure&)> beforeOperation_;
+        std::function<void(Structure&)> afterOperation_;
     };
 
     template <class Structure>
     ComplexityAnalyzer<Structure>::ComplexityAnalyzer(
-        const std::string& name,
-        std::function<void(Structure&, size_t)> insertN
+        const std::string& name
     ) :
         LeafAnalyzer(name),
-        insertN_(insertN)
+        beforeOperation_([](Structure&) {}),
+        afterOperation_([](Structure&) {})
     {
     }
 
     template <class Structure>
     void ComplexityAnalyzer<Structure>::analyze()
     {
-        if constexpr (std::is_default_constructible_v<Structure>)
-        {
-            this->analyze(Structure());
-        }
-        else
-        {
-            throw std::runtime_error("Structure is not default constructible. Use the other overload.");
-        }
+        this->resetSuccess();
+        this->runReplications(this->createPrototype());
+        this->setSuccess();
     }
 
     template<class Structure>
-    void ComplexityAnalyzer<Structure>::analyze(Structure structurePrototype)
+    void ComplexityAnalyzer<Structure>::runReplications(Structure structurePrototype)
     {
-        this->resetSuccess();
-        std::map <size_t, std::vector<duration_t>> data;
-        //prve cviko
-        for (int r = 0; r < this->getReplicationCount(); ++r)
+        std::vector<size_t> sizes;
+        sizes.reserve(this->getStepCount());
+        for (size_t step = 0; step < this->getStepCount(); ++step)
         {
-            Structure st(structurePrototype);
-            this->beforeOperation(st);
-
-            for (int s = 1; s <= this->getStepCount(); ++s)
-            {
-                size_t expectedSize = s * this->getStepSize();
-                size_t insertCount = expectedSize - st.size();
-                this->insertN_(st, insertCount);
-
-                this->beforeOperation(st);
-                auto start = std::chrono::high_resolution_clock::now();
-                this->executeOperation(st);
-                auto stop = std::chrono::high_resolution_clock::now();
-                this->afterOperation(st);
-                auto duration = stop - start;
-                data[expectedSize].push_back(duration);
-            }
-            this->afterOperation(st);
+            const size_t expectedSize = (step + 1) * this->getStepSize();
+            sizes.push_back(expectedSize);
         }
 
-        this->saveToCsvFile(data);
-        this->setSuccess();
-        //throw std::runtime_error("Not implemented yet");
+        std::vector<std::vector<duration_t>> results;
+        results.reserve(this->getReplicationCount());
+        for (size_t replication = 0; replication < this->getReplicationCount(); ++replication)
+        {
+            std::vector<duration_t> durations;
+            durations.reserve(this->getStepCount());
+            Structure structure(structurePrototype);
+            for (size_t step = 0; step < this->getStepCount(); ++step)
+            {
+                const size_t expectedSize = sizes[step];
+                this->growToSize(structure, expectedSize);
+                beforeOperation_(structure);
+                auto start = std::chrono::high_resolution_clock::now();
+                this->executeOperation(structure);
+                auto end = std::chrono::high_resolution_clock::now();
+                afterOperation_(structure);
+                auto duration = std::chrono::duration_cast<duration_t>(end - start);
+                durations.push_back(duration);
+            }
+            results.push_back(std::move(durations));
+        }
+
+        this->saveToCsvFile(sizes, results);
     }
 
     template <class Structure>
-    void ComplexityAnalyzer<Structure>::saveToCsvFile(const std::map<size_t, std::vector<duration_t>>& data) const
+    void ComplexityAnalyzer<Structure>::registerBeforeOperation(std::function<void(Structure&)> op)
+    {
+        beforeOperation_ = std::move(op);
+    }
+
+    template <class Structure>
+    void ComplexityAnalyzer<Structure>::registerAfterOperation(std::function<void(Structure&)> op)
+    {
+        afterOperation_ = std::move(op);
+    }
+
+    template <class Structure>
+    void ComplexityAnalyzer<Structure>::saveToCsvFile(
+        const std::vector<size_t>& sizes,
+        const std::vector<std::vector<duration_t>>& results
+    ) const
     {
         constexpr char Separator = ';';
-        auto path = this->getOutputPath();
+        const std::filesystem::path path = this->getOutputPath();
         std::ofstream ost(path);
 
         if (!ost.is_open())
@@ -186,19 +261,19 @@ namespace ds::utils
             throw std::runtime_error("Failed to open output file.");
         }
 
-        const size_t rowCount = data.begin()->second.size();
-        const size_t lastSize = (--data.end())->first;
-
-        for (const auto& [size, durations] : data)
+        for (const size_t size : sizes)
         {
-            ost << size << (size != lastSize ? Separator : '\n');
+            ost << size << (size != sizes.back() ? Separator : '\n');
         }
 
-        for (int i = 0; i < rowCount; ++i)
+        for (const std::vector<duration_t>& durations : results)
         {
-            for (const auto& [size, durations] : data)
+            size_t col = 0;
+            for (const duration_t duration : durations)
             {
-                ost << data.at(size)[i].count() << (size != lastSize ? Separator : '\n');
+                ost << duration.count()
+                    << (col != durations.size() - 1 ? Separator : '\n');
+                ++col;
             }
         }
     }

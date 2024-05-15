@@ -101,7 +101,7 @@ namespace ds::adt {
 
     template <typename P, typename T>
     class UnsortedImplicitSequencePriorityQueue :
-        public UnsortedSequencePriorityQueue<P, T, amt::IS<PQItem<P, T>>>
+        public UnsortedSequencePriorityQueue<P, T, amt::IS<PQItem<P,T>>>
     {
     public:
         void push(P priority, T data) override;
@@ -423,7 +423,7 @@ namespace ds::adt {
     }
 
     template<typename P, typename T>
-    TwoLists<P, T>::TwoLists(size_t expectedSize) :
+    TwoLists<P, T>::TwoLists(size_t expectedSize):
         shortSequence_(new ShortSequenceType(static_cast<size_t>(std::ceil(std::sqrt(expectedSize))), false)),
         longSequence_(new LongSequenceType())
     {
@@ -577,12 +577,12 @@ namespace ds::adt {
         {
             std::function<HierarchyBlockType* (HierarchyBlockType*)> findSonWithHigherPriority;
             findSonWithHigherPriority = [this](HierarchyBlockType* blockParent)
-                {
-                    HierarchyBlockType* leftSon = this->getHierarchy()->accessLeftSon(*blockParent);
-                    HierarchyBlockType* rightSon = this->getHierarchy()->accessRightSon(*blockParent);
+            {
+                HierarchyBlockType* leftSon = this->getHierarchy()->accessLeftSon(*blockParent);
+                HierarchyBlockType* rightSon = this->getHierarchy()->accessRightSon(*blockParent);
 
-                    return rightSon == nullptr || leftSon->data_.priority_ < rightSon->data_.priority_ ? leftSon : rightSon;
-                };
+                return rightSon == nullptr || leftSon->data_.priority_ < rightSon->data_.priority_ ? leftSon : rightSon;
+            };
 
             HierarchyBlockType* sonBlock = findSonWithHigherPriority(currentBlock);
 

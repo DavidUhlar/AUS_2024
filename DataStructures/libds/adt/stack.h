@@ -144,7 +144,6 @@ namespace ds::adt {
         T result = this->getSequence()->accessFirst()->data_;
         this->getSequence()->removeFirst();
         return result;
-        
     }
 
     template<typename T>

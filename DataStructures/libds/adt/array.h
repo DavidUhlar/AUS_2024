@@ -277,7 +277,7 @@ namespace ds::adt {
         const CompactMatrix<T>& otherMatrix = dynamic_cast<const CompactMatrix<T>&>(other);
         if (dimension1_ != otherMatrix.dimension1_ || dimension2_ != otherMatrix.dimension2_)
         {
-            this->error("CompactMatrix dimensions are different!");
+            throw std::logic_error("CompactMatrix dimensions are different!");
         }
         ADS<T>::assign(otherMatrix);
         return *this;
@@ -286,7 +286,7 @@ namespace ds::adt {
     template<typename T>
     void CompactMatrix<T>::clear()
     {
-        this->error("CompactMatrix can't be cleared!");
+        throw std::logic_error("CompactMatrix can't be cleared!");
     }
 
     template<typename T>
@@ -326,45 +326,38 @@ namespace ds::adt {
     template<typename T>
     T CompactMatrix<T>::access(long long index1, long long index2) const
     {
-        
         if (!this->validateIndices(index1, index2))
         {
             throw std::out_of_range("Invalid index!");
-
         }
-        size_t mapingIndex = this->mapIndices(index1, index2);
-        this->getSequence()->access(mapingIndex)->data_;
-
+        size_t mappedIndex = this->mapIndices(index1, index2);
+        return this->getSequence()->access(mappedIndex)->data_;
     }
+
     template<typename T>
     void CompactMatrix<T>::set(T element, long long index1, long long index2)
     {
-        
         if (!this->validateIndices(index1, index2))
         {
             throw std::out_of_range("Invalid index!");
-
         }
-        size_t mapingIndex = this->mapIndices(index1, index2);
-        this->getSequence()->access(mapingIndex)->data_ = element;
+        size_t mappedIndex = this->mapIndices(index1, index2);
+        this->getSequence()->access(mappedIndex)->data_ = element;
     }
 
     template<typename T>
     bool CompactMatrix<T>::validateIndices(long long index1, long long index2) const
     {
-        
-        return index1 >= this->dimension1_.getBase() &&
-            index1 < this->dimension1_.getBase() + this->dimension1_.getSize() &&
-            index2 >= this->dimension2_.getBase() &&
-            index1 < this->dimension2_.getBase() + this->dimension2_.getSize();
+        return index1 >= dimension1_.getBase() &&
+               index1 < dimension1_.getBase() + static_cast<long long>(dimension1_.getSize()) &&
+               index2 >= dimension2_.getBase() &&
+               index2 < dimension2_.getBase() + static_cast<long long>(dimension2_.getSize());
     }
 
     template<typename T>
     size_t CompactMatrix<T>::mapIndices(long long index1, long long index2) const
     {
-        
-        return (index1 - this->dimension1_.getBase())
-            * this->dimension2_.getSize() + (index2 - this->dimension2_.getBase());
+        return (index1 - dimension1_.getBase()) * dimension2_.getSize() + (index2 - dimension2_.getBase());
     }
 
     template<typename T>
