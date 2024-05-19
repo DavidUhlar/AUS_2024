@@ -4,7 +4,6 @@
 #include <libds/mm/compact_memory_manager.h>
 #include <memory>
 
-
 namespace ds::tests
 {
     /**
@@ -29,7 +28,10 @@ namespace ds::tests
                 *manager.allocateMemory() = i;
             }
 
-            this->assert_equals(static_cast<std::size_t>(n), manager.getAllocatedBlockCount());
+            this->assert_equals(
+                static_cast<std::size_t>(n),
+                manager.getAllocatedBlockCount()
+            );
         }
     };
 
@@ -62,6 +64,11 @@ namespace ds::tests
                 this->assert_equals(expectedPtr, actualPtr);
                 this->assert_equals(i, *actualPtr);
             }
+
+            this->assert_equals(
+                static_cast<std::size_t>(n),
+                manager.getAllocatedBlockCount()
+            );
         }
     };
 
@@ -97,6 +104,11 @@ namespace ds::tests
             {
                 this->assert_equals(i, manager.getBlockAt(i));
             }
+
+            this->assert_equals(
+                static_cast<std::size_t>(n),
+                manager.getAllocatedBlockCount()
+            );
         }
     };
 
@@ -125,6 +137,11 @@ namespace ds::tests
             manager.releaseMemory();
 
             this->assert_equals(n - 2, manager.getBlockAt(n - 2));
+
+            this->assert_equals(
+                static_cast<std::size_t>(n) - 1,
+                manager.getAllocatedBlockCount()
+            );
         }
     };
 
@@ -157,6 +174,10 @@ namespace ds::tests
             this->assert_equals(1, manager.getBlockAt(0));
             this->assert_equals(8, manager.getBlockAt(n - 3));
             this->assert_equals(4, manager.getBlockAt(2));
+            this->assert_equals(
+                static_cast<std::size_t>(n) - 3,
+                manager.getAllocatedBlockCount()
+            );
         }
     };
 
@@ -186,6 +207,10 @@ namespace ds::tests
 
             this->assert_equals(static_cast<std::size_t>(4), manager.getAllocatedBlockCount());
             this->assert_equals(3, manager.getBlockAt(3));
+            this->assert_equals(
+                static_cast<std::size_t>(4),
+                manager.getAllocatedBlockCount()
+            );
         }
     };
 
@@ -205,27 +230,30 @@ namespace ds::tests
         {
             const int n = 10;
 
-            mm::CompactMemoryManager<int> manager1;
+            mm::CompactMemoryManager<DummyData> manager1;
             for (int i = 0; i < n; ++i)
             {
-                *manager1.allocateMemory() = i;
+                manager1.allocateMemory()->set_number(i);
             }
 
-            mm::CompactMemoryManager<int> manager2;
+            mm::CompactMemoryManager<DummyData> manager2;
             manager2.assign(manager1);
             for (int i = 0; i < n; ++i)
             {
-                this->assert_equals(manager1.getBlockAt(i), manager2.getBlockAt(i));
+                this->assert_equals(
+                    manager1.getBlockAt(i).get_number(),
+                    manager2.getBlockAt(i).get_number()
+                );
             }
 
             for (int i = 0; i < n; ++i)
             {
-                manager1.getBlockAt(i) = 0;
+                manager1.getBlockAt(i).set_number(-1);
             }
 
             for (int i = 0; i < n; ++i)
             {
-                this->assert_equals(manager2.getBlockAt(i), i);
+                this->assert_equals(manager2.getBlockAt(i).get_number(), i, "Deep copy check");
             }
         }
     };

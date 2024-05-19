@@ -5,7 +5,6 @@
 #include <tests/mm/compact_memory_manager.test.h>
 #include <memory>
 
-
 namespace ds::tests
 {
     class MMTest : public CompositeTest

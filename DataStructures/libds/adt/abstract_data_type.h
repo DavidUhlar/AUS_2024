@@ -20,11 +20,11 @@ namespace ds::adt {
     {
     public:
         virtual ~AbstractDataType() = default;
-        virtual AbstractDataType& assign(const AbstractDataType& iný) = 0;
+        virtual AbstractDataType& assign(const AbstractDataType& other) = 0;
         virtual void clear() = 0;
         virtual size_t size() const = 0;
         virtual bool isEmpty() const = 0;
-        virtual bool equals(const AbstractDataType& iný) = 0;
+        virtual bool equals(const AbstractDataType& other) = 0;
     };
 
     using ADT = AbstractDataType;
@@ -39,7 +39,7 @@ namespace ds::adt {
         explicit AbstractDataStructure(amt::AMT* memoryStructure);
         AbstractDataStructure(const AbstractDataStructure& other) = delete;
         AbstractDataStructure(amt::AMT* memoryStructure, const AbstractDataStructure& other);
-        ~AbstractDataStructure();
+        ~AbstractDataStructure() override;
 
         ADT& assign(const ADT& other) override;
         void clear() override;
@@ -48,8 +48,6 @@ namespace ds::adt {
         bool equals(const ADT& other) override;
 
     protected:
-        void error(std::string why) const;
-
         amt::AMT* memoryStructure_;
     };
 
@@ -62,12 +60,6 @@ namespace ds::adt {
     class AbstractDataMultistructure :
         virtual public ADT
     {
-    public:
-        AbstractDataMultistructure();
-        ~AbstractDataMultistructure();
-
-    protected:
-        void error(std::string why) const;
     };
 
     template<typename T>
@@ -85,7 +77,7 @@ namespace ds::adt {
     AbstractDataStructure<T>::AbstractDataStructure(amt::AMT* memoryStructure, const AbstractDataStructure& other):
         AbstractDataStructure(memoryStructure)
     {
-        assign(other);
+        AbstractDataStructure<T>::assign(other);
     }
 
     template<typename T>
@@ -121,13 +113,14 @@ namespace ds::adt {
     template<typename T>
     bool AbstractDataStructure<T>::isEmpty() const
     {
-        return memoryStructure_->isEmpty();
+        return this->size() == 0;
     }
 
     template<typename T>
     bool AbstractDataStructure<T>::equals(const ADT& other)
     {
-        if (this != &other) {
+        if (this != &other)
+        {
             const ADS<T>& otherADS = dynamic_cast<const ADS<T>&>(other);
             return memoryStructure_->equals(*otherADS.memoryStructure_);
         }
@@ -136,27 +129,4 @@ namespace ds::adt {
             return true;
         }
     }
-
-    template<typename T>
-    void AbstractDataStructure<T>::error(std::string why) const
-    {
-        throw structure_error(why);
-    }
-
-    template<typename T>
-    AbstractDataMultistructure<T>::AbstractDataMultistructure()
-    {
-    }
-
-    template<typename T>
-    AbstractDataMultistructure<T>::~AbstractDataMultistructure()
-    {
-    }
-
-    template<typename T>
-    void AbstractDataMultistructure<T>::error(std::string why) const
-    {
-        throw structure_error(why);
-    }
-
 }

@@ -8,7 +8,6 @@
 #include <tests/amt/hierarchy.test.h>
 #include <memory>
 
-
 namespace ds::tests
 {
     class AMTTest : public CompositeTest

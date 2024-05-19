@@ -5,7 +5,8 @@
 namespace ds::amt {
 
 	template<typename BlockType>
-	class Network : virtual public AMT
+	class Network :
+		virtual public AMT
 	{
 	public:
 		using NodeType = BlockType;

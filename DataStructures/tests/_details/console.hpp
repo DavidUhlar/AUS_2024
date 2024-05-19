@@ -2,7 +2,6 @@
 
 #include <string_view>
 
-
 namespace ds::tests
 {
     enum class Color

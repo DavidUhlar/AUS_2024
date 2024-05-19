@@ -2,20 +2,20 @@
 
 #include <tests/_details/test.hpp>
 #include <libds/adt/queue.h>
-
+#include <type_traits>
 
 namespace ds::tests
 {
     /**
      * @brief Tests the push operation.
-     * \tparam QueueT Type of the queue.
+     * @tparam QueueT Type of the queue.
      */
     template<class QueueT>
-    class QueueTestPush : public LeafTest
+    class QueueTestPushPeek : public LeafTest
     {
     public:
-        QueueTestPush() :
-            LeafTest("push")
+        QueueTestPushPeek() :
+            LeafTest("push-peek")
         {
         }
 
@@ -25,6 +25,14 @@ namespace ds::tests
             constexpr int n = 10;
 
             QueueT queue;
+
+            this->assert_throws([&queue]()
+                {
+                    queue.peek();
+                },
+                "Empty queue throws on peek"
+            );
+
             for (int i = 0; i < n; ++i)
             {
                 queue.push(i);
@@ -37,7 +45,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the pop operation.
-     * \tparam QueueT Type of the queue.
+     * @tparam QueueT Type of the queue.
      */
     template<class QueueT>
     class QueueTestPop : public LeafTest
@@ -54,6 +62,14 @@ namespace ds::tests
             constexpr int n = 10;
 
             QueueT queue;
+
+            this->assert_throws([&queue]()
+                {
+                    queue.pop();
+                },
+                "Empty queue throws on pop"
+            );
+
             for (int i = 0; i < n; ++i)
             {
                 queue.push(i);
@@ -70,7 +86,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the clear operation.
-     * \tparam QueueT Type of the queue.
+     * @tparam QueueT Type of the queue.
      */
     template<class QueueT>
     class QueueTestClear : public LeafTest
@@ -101,7 +117,7 @@ namespace ds::tests
 
     /**
      * @brief Tests copy construction, assign, and equals.
-     * \tparam QueueT Type of the queue.
+     * @tparam QueueT Type of the queue.
      */
     template<class QueueT>
     class QueueTestCopyAssignEquals : public LeafTest
@@ -133,12 +149,27 @@ namespace ds::tests
             queue1.pop();
             queue1.pop();
             this->assert_false(queue1.equals(queue3), "Modified assigned queue is different.");
+
+            if constexpr (std::is_same_v<QueueT, adt::ImplicitQueue<int>>)
+            {
+                QueueT queue4;
+                QueueT queue5;
+                for (size_t i = 0; i < queue4.getCapacity() - 1; ++i)
+                {
+                    queue4.push(7);
+                    queue5.push(7);
+                }
+                queue4.push(1);
+                queue5.push(2);
+                this->assert_false(queue4.equals(queue5), "Full different implicit queues are different");
+            }
+
         }
     };
 
     /**
      * @brief All queue leaf tests.
-     * \tparam QueueT Type of the queue.
+     * @tparam QueueT Type of the queue.
      */
     template<class QueueT>
     class GeneralQueueTest : public CompositeTest
@@ -147,7 +178,7 @@ namespace ds::tests
         GeneralQueueTest(const std::string& name) :
             CompositeTest(name)
         {
-            this->add_test(std::make_unique<QueueTestPush<QueueT>>());
+            this->add_test(std::make_unique<QueueTestPushPeek<QueueT>>());
             this->add_test(std::make_unique<QueueTestPop<QueueT>>());
             this->add_test(std::make_unique<QueueTestClear<QueueT>>());
             this->add_test(std::make_unique<QueueTestCopyAssignEquals<QueueT>>());

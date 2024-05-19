@@ -4,15 +4,19 @@
 #include <libds/mm/compact_memory_manager.h>
 #include <functional>
 
+#pragma warning( disable : 4250 )
+
 namespace ds::amt {
 
-	class unavailable_function_call : public std::bad_function_call
+	class unavailable_function_call :
+		public std::bad_function_call
 	{
 	public:
 		unavailable_function_call(std::string what) : what_(std::move(what)) {}
 		unavailable_function_call(const unavailable_function_call& other) noexcept : what_(other.what_) {};
 		unavailable_function_call& operator=(const unavailable_function_call& other) noexcept { what_ = other.what_; return *this; }
 		const char* what() const noexcept override { return what_.c_str(); }
+
 	private:
 		std::string what_;
 	};
@@ -22,8 +26,7 @@ namespace ds::amt {
 	template<typename DataType>
 	struct MemoryBlock
 	{
-		MemoryBlock(): data_(DataType()) {}
-
+		using DataT = DataType;
 		DataType data_;
 	};
 
@@ -45,16 +48,17 @@ namespace ds::amt {
 	//----------
 
 	template<typename BlockType>
-	class AbstractMemoryStructure : virtual public AMT
+	class AbstractMemoryStructure :
+		virtual public AMT
 	{
 	public:
-		AbstractMemoryStructure(mm::MemoryManager<BlockType>* memoryManager);
-		virtual ~AbstractMemoryStructure();
+		explicit AbstractMemoryStructure(mm::MemoryManager<BlockType>* memoryManager);
+        ~AbstractMemoryStructure() override;
 
 		size_t size() const override;
-		bool isEmpty() const override { return size() == 0; }
+		bool isEmpty() const override;
 
-	protected:
+    protected:
 		mm::MemoryManager<BlockType>* memoryManager_;
 	};
 
@@ -64,7 +68,8 @@ namespace ds::amt {
 	//----------
 
 	template<typename DataType>
-	class ImplicitAbstractMemoryStructure : public AMS<MemoryBlock<DataType>>
+	class ImplicitAbstractMemoryStructure :
+		public AMS<MemoryBlock<DataType>>
 	{
 	public:
 		using BlockType = MemoryBlock<DataType>;
@@ -72,7 +77,7 @@ namespace ds::amt {
 
 		ImplicitAbstractMemoryStructure();
 		ImplicitAbstractMemoryStructure(size_t capacity, bool initBlocks);
-		ImplicitAbstractMemoryStructure(MemoryManagerType* memoryManager);
+        explicit ImplicitAbstractMemoryStructure(MemoryManagerType* memoryManager);
 		ImplicitAbstractMemoryStructure(const ImplicitAbstractMemoryStructure<DataType>& other);
 
 		AMT& assign(const AMT& other) override;
@@ -85,7 +90,7 @@ namespace ds::amt {
 		static const int INIT_CAPACITY = 10;
 
 	protected:
-		mm::CompactMemoryManager<BlockType>* getMemoryManager() const;
+		MemoryManagerType* getMemoryManager() const;
 	};
 
 	template<typename DataType>
@@ -94,11 +99,12 @@ namespace ds::amt {
 	//----------
 
 	template<typename BlockType>
-	class ExplicitAbstractMemoryStructure : public AMS<BlockType>
+	class ExplicitAbstractMemoryStructure :
+		public AMS<BlockType>
 	{
 	public:
 		ExplicitAbstractMemoryStructure();
-		ExplicitAbstractMemoryStructure(mm::MemoryManager<BlockType>* memoryManager);
+		explicit ExplicitAbstractMemoryStructure(mm::MemoryManager<BlockType>* memoryManager);
 	};
 
 	template<typename BlockType>
@@ -117,7 +123,8 @@ namespace ds::amt {
 	};
 
 	template<typename BlockType>
-	class ForwardIterator : public Iterator<BlockType>
+	class ForwardIterator :
+	    public Iterator<BlockType>
 	{
 	public:
 		virtual bool equals(const ForwardIterator<BlockType>& other) const = 0;
@@ -125,7 +132,8 @@ namespace ds::amt {
 	};
 
 	template<typename BlockType>
-	class BidirectionalIterator : public ForwardIterator<BlockType>
+	class BidirectionalIterator :
+	    public ForwardIterator<BlockType>
 	{
 	public:
 		virtual void moveBackward() = 0;
@@ -133,7 +141,8 @@ namespace ds::amt {
 	};
 
 	template<typename BlockType>
-	class RandomAccessIterator : public BidirectionalIterator<BlockType>
+	class RandomAccessIterator :
+	    public BidirectionalIterator<BlockType>
 	{
 	public:
 		virtual bool isBefore(const RandomAccessIterator<BlockType>& other) const = 0;
@@ -148,9 +157,11 @@ namespace ds::amt {
 	public:
 		CompactMemoryIterator(ImplicitAMS<BlockType>* structure, size_t current) :
 		    structure_(structure),
-		    current_(current) {}
+		    current_(current)
+		{
+		}
 
-		~CompactMemoryIterator()
+		~CompactMemoryIterator() override
 		{
 			structure_ = nullptr;
 			current_ = 0;
@@ -167,12 +178,16 @@ namespace ds::amt {
 	};
 
 	template<typename BlockType>
-	class NonCompactMemoryIterator : public Iterator<BlockType>
+	class NonCompactMemoryIterator :
+	    public Iterator<BlockType>
 	{
 	public:
-		NonCompactMemoryIterator(BlockType* current) : current_(current) {}
+		NonCompactMemoryIterator(BlockType* current) :
+			current_(current)
+	    {
+		}
 
-		~NonCompactMemoryIterator()
+		~NonCompactMemoryIterator() override
 		{
 			current_ = nullptr;
 		}
@@ -189,7 +204,10 @@ namespace ds::amt {
 	//----------
 
 	template<typename BlockType>
-    AbstractMemoryStructure<BlockType>::AbstractMemoryStructure(mm::MemoryManager<BlockType>* memoryManager) : memoryManager_(memoryManager) {}
+    AbstractMemoryStructure<BlockType>::AbstractMemoryStructure(mm::MemoryManager<BlockType>* memoryManager):
+		memoryManager_(memoryManager)
+	{
+	}
 
 	template<typename BlockType>
     AbstractMemoryStructure<BlockType>::~AbstractMemoryStructure()
@@ -204,11 +222,21 @@ namespace ds::amt {
 		return memoryManager_->getAllocatedBlockCount();
 	}
 
-	template<typename DataType>
-    ImplicitAbstractMemoryStructure<DataType>::ImplicitAbstractMemoryStructure() : ImplicitAbstractMemoryStructure<DataType>(INIT_CAPACITY, false) {}
+    template <typename BlockType>
+    bool AbstractMemoryStructure<BlockType>::isEmpty() const
+	{
+	    return this->size() == 0;
+	}
+
+    template<typename DataType>
+    ImplicitAbstractMemoryStructure<DataType>::ImplicitAbstractMemoryStructure():
+		ImplicitAbstractMemoryStructure<DataType>(INIT_CAPACITY, false)
+	{
+	}
 
 	template<typename DataType>
-    ImplicitAbstractMemoryStructure<DataType>::ImplicitAbstractMemoryStructure(size_t capacity, bool initBlocks) : AMS<MemoryBlock<DataType>>(new mm::CompactMemoryManager<BlockType>(capacity))
+    ImplicitAbstractMemoryStructure<DataType>::ImplicitAbstractMemoryStructure(size_t capacity, bool initBlocks) :
+		AMS<MemoryBlock<DataType>>(new MemoryManagerType(capacity))
 	{
 		if (initBlocks)
 		{
@@ -220,17 +248,24 @@ namespace ds::amt {
 	}
 
 	template<typename DataType>
-    ImplicitAbstractMemoryStructure<DataType>::ImplicitAbstractMemoryStructure(mm::CompactMemoryManager<BlockType>* memoryManager) : AMS<MemoryBlock<DataType>>(memoryManager) {	}
+    ImplicitAbstractMemoryStructure<DataType>::ImplicitAbstractMemoryStructure(mm::CompactMemoryManager<BlockType>* memoryManager):
+		AMS<MemoryBlock<DataType>>(memoryManager)
+	{
+	}
 
 	template<typename DataType>
-    ImplicitAbstractMemoryStructure<DataType>::ImplicitAbstractMemoryStructure(const ImplicitAbstractMemoryStructure<DataType>& other) : AMS<MemoryBlock<DataType>>(new mm::CompactMemoryManager<BlockType>(*other.getMemoryManager())) {}
+    ImplicitAbstractMemoryStructure<DataType>::ImplicitAbstractMemoryStructure(const ImplicitAbstractMemoryStructure<DataType>& other):
+		AMS<MemoryBlock<DataType>>(new MemoryManagerType(*other.getMemoryManager()))
+	{
+	}
 
 	template<typename DataType>
     AMT& ImplicitAbstractMemoryStructure<DataType>::assign(const AMT& other)
 	{
-		if (this != &other) {
+		if (this != &other)
+		{
 			const ImplicitAMS<DataType>& otherImplicitStructure = dynamic_cast<const ImplicitAMS<DataType>&>(other);
-			getMemoryManager()->assign(*otherImplicitStructure.getMemoryManager());
+			this->getMemoryManager()->assign(*otherImplicitStructure.getMemoryManager());
 		}
 
 		return *this;
@@ -239,16 +274,16 @@ namespace ds::amt {
 	template<typename DataType>
     void ImplicitAbstractMemoryStructure<DataType>::clear()
 	{
-		getMemoryManager()->clear();
+		this->getMemoryManager()->clear();
 	}
 
 	template<typename DataType>
     bool ImplicitAbstractMemoryStructure<DataType>::equals(const AMT& other)
 	{
-		if (this != &other) {
+		if (this != &other)
+		{
 			const ImplicitAMS<DataType>& otherImplicitStructure = dynamic_cast<const ImplicitAMS<DataType>&>(other);
-
-			return getMemoryManager()->equals(*otherImplicitStructure.getMemoryManager());
+			return this->getMemoryManager()->equals(*otherImplicitStructure.getMemoryManager());
 		}
 		else
 		{
@@ -259,25 +294,31 @@ namespace ds::amt {
 	template<typename DataType>
     size_t ImplicitAbstractMemoryStructure<DataType>::getCapacity()
 	{
-		return getMemoryManager()->getCapacity();
+		return this->getMemoryManager()->getCapacity();
 	}
 
 	template<typename DataType>
     void ImplicitAbstractMemoryStructure<DataType>::changeCapacity(size_t newCapacity)
 	{
-		getMemoryManager()->changeCapacity(newCapacity);
+		this->getMemoryManager()->changeCapacity(newCapacity);
 	}
 
 	template<typename DataType>
-    mm::CompactMemoryManager<MemoryBlock<DataType>>* ImplicitAbstractMemoryStructure<DataType>::getMemoryManager() const
+    auto ImplicitAbstractMemoryStructure<DataType>::getMemoryManager() const -> MemoryManagerType*
 	{
-		return dynamic_cast<mm::CompactMemoryManager<BlockType>*>(AMS<BlockType>::memoryManager_);
+		return dynamic_cast<MemoryManagerType*>(AMS<BlockType>::memoryManager_);
 	}
 
+	template<typename BlockType>
+    ExplicitAbstractMemoryStructure<BlockType>::ExplicitAbstractMemoryStructure():
+		AMS<BlockType>(new mm::MemoryManager<BlockType>())
+	{
+	}
 
 	template<typename BlockType>
-    ExplicitAbstractMemoryStructure<BlockType>::ExplicitAbstractMemoryStructure() : AMS<BlockType>(new mm::MemoryManager<BlockType>()) {}
+    ExplicitAbstractMemoryStructure<BlockType>::ExplicitAbstractMemoryStructure(mm::MemoryManager<BlockType>* memoryManager):
+		AMS<BlockType>(memoryManager)
+	{
+	}
 
-	template<typename BlockType>
-    ExplicitAbstractMemoryStructure<BlockType>::ExplicitAbstractMemoryStructure(mm::MemoryManager<BlockType>* memoryManager) : AMS<BlockType>(memoryManager) {	}
 }

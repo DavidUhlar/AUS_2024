@@ -6,7 +6,6 @@
 #include <tests/mm/mm.test.h>
 #include <memory>
 
-
 namespace ds::tests
 {
     class RootTest : public CompositeTest

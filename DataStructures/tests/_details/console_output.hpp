@@ -4,7 +4,6 @@
 #include <tests/_details/visitors.hpp>
 #include <string>
 
-
 namespace ds::tests
 {
     /**

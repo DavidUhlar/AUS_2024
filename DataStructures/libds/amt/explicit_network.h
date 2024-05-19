@@ -9,7 +9,8 @@
 namespace ds::amt {
 
 	template<typename DataType>
-	struct NetworkBlockImplicitRelations : public MemoryBlock<DataType>
+	struct NetworkBlockImplicitRelations :
+		public MemoryBlock<DataType>
 	{
 		using RelationBlockType = typename ImplicitAMS<NetworkBlockImplicitRelations<DataType>*>::BlockType;
 
@@ -23,7 +24,8 @@ namespace ds::amt {
 	using IRNetworkBlock = NetworkBlockImplicitRelations<DataType>;
 
 	template<typename DataType>
-	struct NetworkBlockExplicitRelations : public MemoryBlock<DataType>
+	struct NetworkBlockExplicitRelations :
+		public MemoryBlock<DataType>
 	{
 		using RelationBlockType = typename DoublyLS<NetworkBlockExplicitRelations<DataType>*>::BlockType;
 
@@ -39,7 +41,9 @@ namespace ds::amt {
 	//----------
 
 	template<typename BlockType, typename GateType>
-	class ExplicitNetwork : public Network<BlockType>, public ExplicitAMS<BlockType>
+	class ExplicitNetwork :
+		public Network<BlockType>,
+		public ExplicitAMS<BlockType>
 	{
 	public:
 		using RelationsBlockType = typename BlockType::RelationBlockType;
@@ -75,27 +79,38 @@ namespace ds::amt {
 		GateType* gate_;
 	};
 
-
 	template<typename DataType>
-	class ImplicitGateImplicitRelationsNetwork : public ExplicitNetwork<IRNetworkBlock<DataType>, IS<IRNetworkBlock<DataType>*>> {};
+	class ImplicitGateImplicitRelationsNetwork :
+		public ExplicitNetwork<IRNetworkBlock<DataType>, IS<IRNetworkBlock<DataType>*>>
+	{
+	};
 
 	template<typename DataType>
 	using IGIRNetwork = ImplicitGateImplicitRelationsNetwork<DataType>;
 
 	template<typename DataType>
-	class ImplicitGateExplicitRelationsNetwork : public ExplicitNetwork<ERNetworkBlock<DataType>, IS<ERNetworkBlock<DataType>*>> {};
+	class ImplicitGateExplicitRelationsNetwork :
+		public ExplicitNetwork<ERNetworkBlock<DataType>, IS<ERNetworkBlock<DataType>*>>
+	{
+	};
 
 	template<typename DataType>
 	using IGERNetwork = ImplicitGateExplicitRelationsNetwork<DataType>;
 
 	template<typename DataType>
-	class ExplicitGateImplicitRelationsNetwork : public ExplicitNetwork<IRNetworkBlock<DataType>, DoublyLS<IRNetworkBlock<DataType>*>> {};
+	class ExplicitGateImplicitRelationsNetwork :
+		public ExplicitNetwork<IRNetworkBlock<DataType>, DoublyLS<IRNetworkBlock<DataType>*>>
+	{
+	};
 
 	template<typename DataType>
 	using EGIRNetwork = ExplicitGateImplicitRelationsNetwork<DataType>;
 
 	template<typename DataType>
-	class ExplicitGateExplicitRelationsNetwork : public ExplicitNetwork<ERNetworkBlock<DataType>, DoublyLS<ERNetworkBlock<DataType>*>> {};
+	class ExplicitGateExplicitRelationsNetwork :
+		public ExplicitNetwork<ERNetworkBlock<DataType>, DoublyLS<ERNetworkBlock<DataType>*>>
+	{
+	};
 
 	template<typename DataType>
 	using EGERNetwork = ExplicitGateExplicitRelationsNetwork<DataType>;
@@ -108,7 +123,9 @@ namespace ds::amt {
 		if (this != &other)
 		{
 			clear();
+
 			const ExplicitNetwork<BlockType, GateType>& otherExplicitNetwork = dynamic_cast<const  ExplicitNetwork<BlockType, GateType>&>(other);
+
 			otherExplicitNetwork.gate_->processAllBlocksForward([&](GateBlockType* b) { insert().data_ = b->data_->data_; });
 
 			GateBlockType* myBlockFrom = gate_->accessFirst();
@@ -119,7 +136,6 @@ namespace ds::amt {
 				otherBlockFrom->data_->relations_->processAllBlocksForward([&](RelationsBlockType* otherRelationsBlock)
 					{
 						size_t otherGateIndexTo = 0;
-
 						otherExplicitNetwork.gate_->findBlockWithProperty([&](GateBlockType* otherGateBlockIndexTo)->bool
 							{
 								if (otherGateBlockIndexTo->data_ == otherRelationsBlock->data_)
@@ -128,11 +144,9 @@ namespace ds::amt {
 								}
 								else {
 									otherGateIndexTo++;
-
 									return false;
 								}
 							});
-
 						GateBlockType* myBlockTo = gate_->access(otherGateIndexTo);
 						connect(*myBlockFrom->data_, *myBlockTo->data_);
 					});
@@ -141,7 +155,6 @@ namespace ds::amt {
 				otherBlockFrom = otherExplicitNetwork.gate_->accessNext(*otherBlockFrom);
 			}
 		}
-
 		return *this;
 	}
 
@@ -224,7 +237,6 @@ namespace ds::amt {
     bool ExplicitNetwork<BlockType, GateType>::relationExists(const BlockType& nodeA, const BlockType& nodeB) const
 	{
 		std::function<bool(const BlockType&, const BlockType&)> relationExists;
-
 		relationExists = [](const BlockType& vrcholOd, const BlockType& vrcholDo)->bool
 		{
 			return vrcholOd.relations_->findBlockWithProperty([&vrcholDo](RelationsBlockType* b)->bool {return b->data_ == &vrcholDo; }) != nullptr;
@@ -238,7 +250,6 @@ namespace ds::amt {
 	{
 		BlockType* newNode = AMS<BlockType>::memoryManager_->allocateMemory();
 		gate_->insertLast().data_ = newNode;
-
 		return *newNode;
 	}
 
@@ -251,7 +262,6 @@ namespace ds::amt {
 		}
 
 		GateBlockType* gateBlock = gate_->accessFirst();
-
 		if (gateBlock->data_ == node)
 		{
 			gate_->removeFirst();
@@ -262,7 +272,6 @@ namespace ds::amt {
 				{
 					return b->data_ == node;
 				});
-
 			gate_->removeNext(*prevGateBlock);
 		}
 
@@ -280,7 +289,6 @@ namespace ds::amt {
     void ExplicitNetwork<BlockType, GateBlock>::disconnect(BlockType& nodeA, BlockType& nodeB)
 	{
 		std::function<void(const BlockType&, const BlockType&)> disconnectRelation;
-
 		disconnectRelation = [](const BlockType& nodeFrom, const BlockType& nodeTo)
 		{
 
@@ -294,7 +302,6 @@ namespace ds::amt {
 					{
 						return b->data_ == &nodeTo;
 					});
-
 				nodeFrom.relations_->removeNext(*prevInRelationsFrom);
 			}
 		};

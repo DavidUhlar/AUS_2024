@@ -7,7 +7,6 @@
 #include <Windows.h>
 #endif
 
-
 namespace ds::tests
 {
     auto Console::print (std::string_view const str) -> void

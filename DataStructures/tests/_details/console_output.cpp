@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string_view>
 
-
 namespace ds::tests
 {
     namespace

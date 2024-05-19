@@ -6,7 +6,9 @@
 namespace ds::amt {
 
     template<typename BlockType>
-	class ExplicitSequence : public Sequence<BlockType>, public ExplicitAMS<BlockType>
+    class ExplicitSequence :
+        public Sequence<BlockType>,
+        public ExplicitAMS<BlockType>
     {
     public:
         ExplicitSequence();
@@ -45,7 +47,7 @@ namespace ds::amt {
         BlockType* last_;
 
     public:
-        using DataType = decltype(BlockType().data_);
+        using DataType = typename BlockType::DataT;
 
         class ExplicitSequenceIterator
         {
@@ -74,8 +76,10 @@ namespace ds::amt {
     //----------
 
     template<typename DataType>
-	struct SinglyLinkedSequenceBlock : public MemoryBlock<DataType>
+    struct SinglyLinkedSequenceBlock :
+        public MemoryBlock<DataType>
     {
+
         SinglyLinkedSequenceBlock() : next_(nullptr) {}
         ~SinglyLinkedSequenceBlock() { next_ = nullptr; }
 
@@ -85,7 +89,8 @@ namespace ds::amt {
     using SLSBlock = SinglyLinkedSequenceBlock<DataType>;
 
     template<typename DataType>
-	class SinglyLinkedSequence : public ES<SLSBlock<DataType>>
+    class SinglyLinkedSequence :
+        public ES<SLSBlock<DataType>>
     {
     public:
         using BlockType = SinglyLinkedSequenceBlock<DataType>;
@@ -95,7 +100,10 @@ namespace ds::amt {
     using SinglyLS = SinglyLinkedSequence<DataType>;
 
     template<typename DataType>
-	class SinglyCyclicLinkedSequence : public SinglyLS<DataType> {};
+    class SinglyCyclicLinkedSequence :
+        public SinglyLS<DataType>
+    {
+    };
 
     template<typename DataType>
     using SinglyCLS = SinglyCyclicLinkedSequence<DataType>;
@@ -103,8 +111,10 @@ namespace ds::amt {
     //----------
 
     template<typename DataType>
-	struct DoublyLinkedSequenceBlock : public SLSBlock<DataType>
+    struct DoublyLinkedSequenceBlock :
+        public SLSBlock<DataType>
     {
+
         DoublyLinkedSequenceBlock() : previous_(nullptr) {}
         ~DoublyLinkedSequenceBlock() { previous_ = nullptr; }
 
@@ -115,13 +125,14 @@ namespace ds::amt {
     using DLSBlock = DoublyLinkedSequenceBlock<DataType>;
 
     template<typename DataType>
-    class DoublyLinkedSequence : public ES<DLSBlock<DataType>>
+    class DoublyLinkedSequence :
+        public ES<DLSBlock<DataType>>
     {
     public:
         using BlockType = DLSBlock<DataType>;
 
         BlockType* access(size_t index) const override;
-        BlockType* accessPrevious(const BlockType& block) const override;
+    	BlockType* accessPrevious(const BlockType& block) const override;
 
         void removeFirst() override;
 
@@ -133,17 +144,29 @@ namespace ds::amt {
     template<typename DataType>
     using DoublyLS = DoublyLinkedSequence<DataType>;
 
+    //----------
+
     template<typename DataType>
-	class DoublyCyclicLinkedSequence : public DoublyLS<DataType> {};
+    class DoublyCyclicLinkedSequence :
+        public DoublyLS<DataType>
+    {
+    };
 
     template<typename DataType>
     using DoublyCLS = DoublyCyclicLinkedSequence<DataType>;
 
-    template<typename BlockType>
-    ExplicitSequence<BlockType>::ExplicitSequence() : first_(nullptr), last_(nullptr) {}
+    //----------
 
     template<typename BlockType>
-    ExplicitSequence<BlockType>::ExplicitSequence(const ExplicitSequence& other) : ExplicitSequence()
+    ExplicitSequence<BlockType>::ExplicitSequence() :
+        first_(nullptr),
+        last_(nullptr)
+    {
+    }
+
+    template<typename BlockType>
+    ExplicitSequence<BlockType>::ExplicitSequence(const ExplicitSequence& other) :
+        ExplicitSequence()
     {
         this->assign(other);
     }
@@ -160,12 +183,12 @@ namespace ds::amt {
         if (this != &other)
         {
             this->clear();
-            const ExplicitSequence<BlockType>& otherExplicitSequence = dynamic_cast<const ExplicitSequence<BlockType>&>(other);
 
+            const ExplicitSequence<BlockType>& otherExplicitSequence = dynamic_cast<const ExplicitSequence<BlockType>&>(other);
             otherExplicitSequence.processAllBlocksForward([&](const BlockType* b)
-                {
-                    this->insertLast().data_ = b->data_;
-                });
+            {
+                this->insertLast().data_ = b->data_;
+            });
         }
 
         return *this;
@@ -187,52 +210,51 @@ namespace ds::amt {
     template<typename BlockType>
     bool ExplicitSequence<BlockType>::equals(const AMT& other)
     {
-        
-        const ExplicitSequence<BlockType>* otherES = dynamic_cast<const ExplicitSequence<BlockType>*>(&other);
-        if (otherES == nullptr || this->size() != otherES->size())
-        {
-            return false;
-        }
-
-
-
         if (this == &other)
         {
             return true;
         }
 
-
-
-        BlockType* curThis = first_;
-        BlockType* curOther = otherES->first_;
-
-
-
-        while (curThis != nullptr && curThis->data_ == curOther->data_)
+        if (this->size() != other.size())
         {
-            curThis = this->accessNext(*curThis);
-            curOther = otherES->accessNext(*curOther);
+            return false;
         }
 
+        const ExplicitSequence<BlockType>* otherExplicitSequence = dynamic_cast<const ExplicitSequence<BlockType>*>(&other);
+        if (otherExplicitSequence == nullptr)
+        {
+            return false;
+        }
 
+        BlockType* myCurrent = first_;
+        BlockType* otherCurrent = otherExplicitSequence->first_;
 
-        return curThis == nullptr;
+        while (myCurrent != nullptr)
+        {
+            if (!(myCurrent->data_ == otherCurrent->data_))
+            {
+                return false;
+            }
+            else
+            {
+                myCurrent = this->accessNext(*myCurrent);
+                otherCurrent = otherExplicitSequence->accessNext(*otherCurrent);
+            }
+        }
+
+        return true;
     }
-
 
     template<typename BlockType>
     size_t ExplicitSequence<BlockType>::calculateIndex(BlockType& data)
     {
         size_t result = 0;
-
         BlockType* block = this->findBlockWithProperty([&](BlockType* b)
-            {
-                result++;
-
-                return b == &data;
-            });
-
-        return block ? result - 1 : INVALID_INDEX;
+        {
+            result++;
+            return &data == b;
+        });
+        return block != nullptr ? result - 1 : INVALID_INDEX;
     }
 
     template<typename BlockType>
@@ -255,7 +277,7 @@ namespace ds::amt {
         if (index < this->size())
         {
             result = first_;
-            for (size_t i = 1; i <= index; i++)
+            for (size_t i = 0; i < index; i++)
             {
                 result = this->accessNext(*result);
             }
@@ -285,7 +307,6 @@ namespace ds::amt {
         if (this->size() == 0)
         {
             first_ = last_ = AMS<BlockType>::memoryManager_->allocateMemory();
-
             return *first_;
         }
         else
@@ -299,8 +320,7 @@ namespace ds::amt {
     {
         if (this->size() == 0)
         {
-            first_ = last_ = AbstractMemoryStructure<BlockType>::memoryManager_->allocateMemory();
-
+            first_ = last_ = AMS<BlockType>::memoryManager_->allocateMemory();
             return *last_;
         }
         else
@@ -312,14 +332,18 @@ namespace ds::amt {
     template<typename BlockType>
     BlockType& ExplicitSequence<BlockType>::insert(size_t index)
     {
-        return index == 0 ? this->insertFirst() : index == this->size() ? this->insertLast() : this->insertAfter(*this->access(index - 1));
+        return index == 0
+            ? this->insertFirst()
+            : index == this->size()
+                ? this->insertLast()
+                : this->insertAfter(*this->access(index - 1));
     }
 
     template<typename BlockType>
     BlockType& ExplicitSequence<BlockType>::insertAfter(BlockType& block)
     {
         BlockType* nextBlock = this->accessNext(block);
-        BlockType* newBlock = AbstractMemoryStructure<BlockType>::memoryManager_->allocateMemory();
+        BlockType* newBlock = AMS<BlockType>::memoryManager_->allocateMemory();
 
         this->connectBlocks(&block, newBlock);
         this->connectBlocks(newBlock, nextBlock);
@@ -328,7 +352,6 @@ namespace ds::amt {
         {
             last_ = newBlock;
         }
-
         return *newBlock;
     }
 
@@ -336,7 +359,7 @@ namespace ds::amt {
     BlockType& ExplicitSequence<BlockType>::insertBefore(BlockType& block)
     {
         BlockType* prevBlock = this->accessPrevious(block);
-        BlockType* newBlock = AbstractMemoryStructure<BlockType>::memoryManager_->allocateMemory();
+        BlockType* newBlock = AMS<BlockType>::memoryManager_->allocateMemory();
 
         this->connectBlocks(prevBlock, newBlock);
         this->connectBlocks(newBlock, &block);
@@ -345,7 +368,6 @@ namespace ds::amt {
         {
             first_ = newBlock;
         }
-
         return *newBlock;
     }
 
@@ -354,13 +376,13 @@ namespace ds::amt {
     {
         if (first_ == last_)
         {
-            AbstractMemoryStructure<BlockType>::memoryManager_->releaseMemory(first_);
+            AMS<BlockType>::memoryManager_->releaseMemory(first_);
             first_ = last_ = nullptr;
         }
         else
         {
             BlockType* newFirst = this->accessNext(*first_);
-            AbstractMemoryStructure<BlockType>::memoryManager_->releaseMemory(first_);
+            AMS<BlockType>::memoryManager_->releaseMemory(first_);
             first_ = newFirst;
         }
     }
@@ -370,13 +392,13 @@ namespace ds::amt {
     {
         if (first_ == last_)
         {
-            AbstractMemoryStructure<BlockType>::memoryManager_->releaseMemory(last_);
+            AMS<BlockType>::memoryManager_->releaseMemory(last_);
             first_ = last_ = nullptr;
         }
         else
         {
             BlockType* newLast = this->accessPrevious(*last_);
-            AbstractMemoryStructure<BlockType>::memoryManager_->releaseMemory(last_);
+            AMS<BlockType>::memoryManager_->releaseMemory(last_);
             last_ = newLast;
             last_->next_ = nullptr;
         }
@@ -399,7 +421,6 @@ namespace ds::amt {
     void ExplicitSequence<BlockType>::removeNext(const BlockType& block)
     {
         BlockType* deletedBlock = this->accessNext(block);
-
         if (deletedBlock == last_)
         {
             this->removeLast();
@@ -407,7 +428,7 @@ namespace ds::amt {
         else
         {
             this->disconnectBlock(deletedBlock);
-            AbstractMemoryStructure<BlockType>::memoryManager_->releaseMemory(deletedBlock);
+            AMS<BlockType>::memoryManager_->releaseMemory(deletedBlock);
         }
     }
 
@@ -415,7 +436,6 @@ namespace ds::amt {
     void ExplicitSequence<BlockType>::removePrevious(const BlockType& block)
     {
         BlockType* deletedBlock = this->accessPrevious(block);
-
         if (deletedBlock == first_)
         {
             this->removeFirst();
@@ -423,7 +443,7 @@ namespace ds::amt {
         else
         {
             this->disconnectBlock(deletedBlock);
-            AbstractMemoryStructure<BlockType>::memoryManager_->releaseMemory(deletedBlock);
+            AMS<BlockType>::memoryManager_->releaseMemory(deletedBlock);
         }
     }
 
@@ -444,24 +464,31 @@ namespace ds::amt {
     }
 
     template <typename BlockType>
-    ExplicitSequence<BlockType>::ExplicitSequenceIterator::ExplicitSequenceIterator(BlockType* position) : position_(position) {}
+    ExplicitSequence<BlockType>::ExplicitSequenceIterator::ExplicitSequenceIterator(BlockType* position) :
+        position_(position)
+    {
+    }
 
     template <typename BlockType>
-    ExplicitSequence<BlockType>::ExplicitSequenceIterator::ExplicitSequenceIterator(const ExplicitSequenceIterator& other) : position_(other.position_) {}
+    ExplicitSequence<BlockType>::ExplicitSequenceIterator::ExplicitSequenceIterator(
+        const ExplicitSequenceIterator& other
+    ) :
+        position_(other.position_)
+    {
+    }
 
     template <typename BlockType>
-    auto ExplicitSequence<BlockType>::ExplicitSequenceIterator::operator++() -> ExplicitSequenceIterator&
+    typename ExplicitSequence<BlockType>::ExplicitSequenceIterator& ExplicitSequence<BlockType>::ExplicitSequenceIterator::operator++()
     {
         position_ = static_cast<BlockType*>(position_->next_);
         return *this;
     }
 
     template <typename BlockType>
-    auto ExplicitSequence<BlockType>::ExplicitSequenceIterator::operator++(int) -> ExplicitSequenceIterator
+    typename ExplicitSequence<BlockType>::ExplicitSequenceIterator ExplicitSequence<BlockType>::ExplicitSequenceIterator::operator++(int)
     {
         ExplicitSequenceIterator tmp(*this);
-        operator++();
-
+    	this->operator++();
         return tmp;
     }
 
@@ -496,7 +523,7 @@ namespace ds::amt {
     }
 
     template<typename DataType>
-    DLSBlock<DataType>* DoublyLinkedSequence<DataType>::access(size_t index) const
+    typename DoublyLinkedSequence<DataType>::BlockType* DoublyLinkedSequence<DataType>::access(size_t index) const
     {
         BlockType* result = nullptr;
 
@@ -506,18 +533,18 @@ namespace ds::amt {
             {
                 result = this->first_;
 
-                for (size_t i = 1; i <= index; i++)
+                for (size_t i = 0; i < index; i++)
                 {
-                    result = static_cast<BlockType*>(result->next_);
+                    result = this->accessNext(*result);
                 }
             }
             else
             {
                 result = this->last_;
 
-                for (size_t i = this->size() - index; i > 1; i--)
+                for (size_t i = 0; i < this->size() - index - 1; i++)
                 {
-                    result = result->previous_;
+                    result = this->accessPrevious(*result);
                 }
             }
         }
@@ -526,7 +553,7 @@ namespace ds::amt {
     }
 
     template<typename DataType>
-    DLSBlock<DataType>* DoublyLinkedSequence<DataType>::accessPrevious(const BlockType& block) const
+    typename DoublyLinkedSequence<DataType>::BlockType* DoublyLinkedSequence<DataType>::accessPrevious(const BlockType& block) const
     {
         return block.previous_;
     }
@@ -549,7 +576,7 @@ namespace ds::amt {
 
         if (next != nullptr)
         {
-            next->previous_ = const_cast<BlockType*>(previous);
+            next->previous_ = previous;
         }
     }
 

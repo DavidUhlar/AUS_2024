@@ -3,12 +3,11 @@
 #include <tests/_details/test.hpp>
 #include <libds/adt/list.h>
 
-
 namespace ds::tests
 {
     /**
      * @brief Tests insertion of the first and the last element.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class ListTestInsertEnds : public LeafTest
@@ -32,12 +31,14 @@ namespace ds::tests
                 this->assert_equals(i, list.accessFirst());
                 this->assert_equals(i, list.accessLast());
             }
+
+            this->assert_equals(2 * static_cast<size_t>(n), list.size());
         }
     };
 
     /**
      * @brief Tests insertion at random positions.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class ListTestInsertRandom : public LeafTest
@@ -78,7 +79,7 @@ namespace ds::tests
 
     /**
      * @brief Tests calculation of elements position.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class ListTestCalculateIndex : public LeafTest
@@ -107,7 +108,7 @@ namespace ds::tests
 
     /**
      * @brief Tests access of the first and the last element.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class ListTestAccessEnds : public LeafTest
@@ -147,7 +148,7 @@ namespace ds::tests
 
     /**
      * @brief Tests access of elements at an arbitrary position.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class ListTestAccessRandom : public LeafTest
@@ -188,7 +189,7 @@ namespace ds::tests
 
     /**
      * @brief Tests setting of elements at an arbitrary position.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class ListTestSet : public LeafTest
@@ -229,7 +230,7 @@ namespace ds::tests
 
     /**
      * @brief Tests removal of the first and the last element.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class ListTestRemoveEnds : public LeafTest
@@ -270,7 +271,7 @@ namespace ds::tests
 
     /**
      * @brief Tests removal of element at an arbitrary position.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class ListTestRemoveRandom : public LeafTest
@@ -308,7 +309,7 @@ namespace ds::tests
 
     /**
      * @brief Tests iterator of the list.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class ListTestIterators : public LeafTest
@@ -345,7 +346,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the clear operation.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class ListTestClear : public LeafTest
@@ -376,7 +377,7 @@ namespace ds::tests
 
     /**
      * @brief Tests copy construction, assign, and equals.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class ListTestCopyAssignEquals : public LeafTest
@@ -413,7 +414,7 @@ namespace ds::tests
 
     /**
      * @brief All list leaf tests.
-     * \tparam ListT Type of the list.
+     * @tparam ListT Type of the list.
      */
     template<class ListT>
     class GeneralListTest : public CompositeTest

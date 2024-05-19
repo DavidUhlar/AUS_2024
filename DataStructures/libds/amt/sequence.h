@@ -5,7 +5,8 @@
 namespace ds::amt {
 
 	template<typename BlockType>
-	class Sequence : virtual public AMT
+	class Sequence :
+		virtual public AMT
 	{
 	public:
 		virtual size_t calculateIndex(BlockType& block) = 0;
@@ -37,19 +38,19 @@ namespace ds::amt {
 	};
 
 	template<typename BlockType>
-	void Sequence<BlockType>::processAllBlocksForward(std::function<void(BlockType*)> operation) const
+    void Sequence<BlockType>::processAllBlocksForward(std::function<void(BlockType*)> operation) const
 	{
 		processBlocksForward(accessFirst(), operation);
 	}
 
 	template<typename BlockType>
-	void Sequence<BlockType>::processAllBlocksBackward(std::function<void(BlockType*)> operation) const
+    void Sequence<BlockType>::processAllBlocksBackward(std::function<void(BlockType*)> operation) const
 	{
 		processBlocksBackward(accessLast(), operation);
 	}
 
 	template<typename BlockType>
-	void Sequence<BlockType>::processBlocksForward(BlockType* block, std::function<void(BlockType*)> operation) const
+    void Sequence<BlockType>::processBlocksForward(BlockType* block, std::function<void(BlockType*)> operation) const
 	{
 		while (block != nullptr)
 		{
@@ -59,7 +60,7 @@ namespace ds::amt {
 	}
 
 	template<typename BlockType>
-	void Sequence<BlockType>::processBlocksBackward(BlockType* block, std::function<void(BlockType*)> operation) const
+    void Sequence<BlockType>::processBlocksBackward(BlockType* block, std::function<void(BlockType*)> operation) const
 	{
 		while (block != nullptr)
 		{
@@ -69,7 +70,7 @@ namespace ds::amt {
 	}
 
 	template<typename BlockType>
-	BlockType* Sequence<BlockType>::findBlockWithProperty(std::function<bool(BlockType*)> predicate) const
+    BlockType* Sequence<BlockType>::findBlockWithProperty(std::function<bool(BlockType*)> predicate) const
 	{
 		BlockType* block = accessFirst();
 
@@ -82,7 +83,7 @@ namespace ds::amt {
 	}
 
 	template<typename BlockType>
-	BlockType* Sequence<BlockType>::findPreviousToBlockWithProperty(std::function<bool(BlockType*)> predicate) const
+    BlockType* Sequence<BlockType>::findPreviousToBlockWithProperty(std::function<bool(BlockType*)> predicate) const
 	{
 		BlockType* blockWithProperty = accessFirst();
 

@@ -1,10 +1,10 @@
 #pragma once
 
-
 #include <algorithm>
 #include <libds/adt/table.h>
 #include <memory>
 #include <random>
+#include <unordered_set>
 #include <tests/_details/test.hpp>
 
 namespace ds::tests
@@ -52,7 +52,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the insert operation
-     * \tparam TableT Table type
+     * @tparam TableT Table type
      */
     template<class TableT>
     class TableTestInsert : public details::TableTestBase<TableT>
@@ -98,7 +98,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the find, tryFind, and contains operations
-     * \tparam TableT Table type
+     * @tparam TableT Table type
      */
     template<class TableT>
     class TableTestLookup : public details::TableTestBase<TableT>
@@ -180,7 +180,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the remove operation
-     * \tparam TableT Table type
+     * @tparam TableT Table type
      */
     template<class TableT>
     class TableTestRemove : public details::TableTestBase<TableT>
@@ -227,7 +227,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the clear operation
-     * \tparam TableT Table type
+     * @tparam TableT Table type
      */
     template<class TableT>
     class TableTestClear : public details::TableTestBase<TableT>
@@ -257,7 +257,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the copy constructor and assign operation
-     * \tparam TableT Table type
+     * @tparam TableT Table type
      */
     template<class TableT>
     class TableTestCopyAssign : public details::TableTestBase<TableT>
@@ -314,8 +314,96 @@ namespace ds::tests
     };
 
     /**
+     * @brief Tests table iterator
+     * @tparam TableT Table type
+     */
+    template<class TableT>
+    class TableTestIterator : public details::TableTestBase<TableT>
+    {
+    public:
+        TableTestIterator() :
+            details::TableTestBase<TableT>("iterator", 214)
+        {
+        }
+
+    protected:
+        void test() override
+        {
+            auto constexpr n = 100;
+            auto table = TableT();
+            auto const keys = this->generateKeys(n);
+            for (auto const key : keys)
+            {
+                table.insert(key, key);
+            }
+
+            auto setOfKeys = std::unordered_set<int>();
+            auto it1 = table.begin();
+
+            for (auto i = 0; i < table.size() / 2; ++i)
+            {
+                setOfKeys.insert((*it1).key_);
+                ++it1;
+            }
+
+            auto const endIt = table.end();
+            auto it2 = decltype(it1)(it1);
+            while (it2 != endIt)
+            {
+                setOfKeys.insert((*it2).key_);
+                ++it2;
+            }
+
+            while (it1 != endIt)
+            {
+                setOfKeys.insert((*it1).key_);
+                ++it1;
+            }
+
+            this->assert_equals(keys.size(), setOfKeys.size());
+        }
+    };
+
+    /**
+     * @brief Tests table equality
+     * @tparam TableT Table type
+     */
+    template<class TableT>
+    class TableTestEquals : public details::TableTestBase<TableT>
+    {
+    public:
+        TableTestEquals() :
+            details::TableTestBase<TableT>("equals", 874)
+        {
+        }
+
+    protected:
+        void test() override
+        {
+            auto constexpr n = 100;
+            auto table1 = TableT();
+            auto table2 = TableT();
+            auto keys = this->generateKeys(n);
+            for (auto const key : keys)
+            {
+                table1.insert(key, key);
+            }
+
+            std::shuffle(keys.begin(), keys.begin() + keys.size() / 2, this->rngKey_);
+            for (auto const key : keys)
+            {
+                table2.insert(key, key);
+            }
+
+            this->assert_true(table1.equals(table2), "Tables are equal.");
+            table1.remove(keys.front());
+            this->assert_true(!table1.equals(table2), "Tables are not equal.");
+        }
+    };
+
+    /**
      * @brief Tests all table operations mixed together
-     * \tparam TableT Table type
+     * @tparam TableT Table type
      */
     template<class TableT>
     class TableTestScenario : public details::TableTestBase<TableT>
@@ -368,7 +456,7 @@ namespace ds::tests
                     auto data = table.find(key);
                     this->assert_equals(key, data);
                 }
-                break;
+                    break;
 
                 case 2: // remove
                 {
@@ -381,7 +469,7 @@ namespace ds::tests
                     keys.pop_back();
                     this->assert_equals(keys.size(), table.size());
                 }
-                break;
+                    break;
 
                 default:
                     // Unreachable
@@ -393,7 +481,7 @@ namespace ds::tests
 
     /**
      * @brief All table leaf tests
-     * \tparam TableT table ty[e
+     * @tparam TableT table ty[e
      */
     template<class TableT>
     class GeneralTableTest : public CompositeTest
@@ -407,6 +495,8 @@ namespace ds::tests
             this->add_test(std::make_unique<TableTestRemove<TableT>>());
             this->add_test(std::make_unique<TableTestClear<TableT>>());
             this->add_test(std::make_unique<TableTestCopyAssign<TableT>>());
+            this->add_test(std::make_unique<TableTestIterator<TableT>>());
+            this->add_test(std::make_unique<TableTestEquals<TableT>>());
             this->add_test(std::make_unique<TableTestScenario<TableT>>());
         }
     };

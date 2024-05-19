@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <algorithm>
 #include <functional>
 #include <libds/amt/implicit_sequence.h>
@@ -32,19 +31,19 @@ namespace ds::tests
             {
             }
 
-            amt::ImplicitSequence<std::string> operator()(std::size_t const n)
+            amt::ImplicitSequence<std::string*> operator()(std::size_t const n)
             {
-                auto keys = amt::ImplicitSequence<std::string>(n, false);
+                amt::ImplicitSequence<std::string*>keys(n, false);
                 for (std::size_t i = 0; i < n; ++i)
                 {
-                    auto key = std::string();
-                    auto const keyLength = distLen_(rngLength_);
-                    key.reserve(keyLength);
+                    auto key = new std::string();
+                    size_t const keyLength = distLen_(rngLength_);
+                    key->reserve(keyLength);
                     for (std::size_t j = 0; j < keyLength; ++j)
                     {
-                        key += static_cast<char>(distChar_(rngChar_));
+                        *key += static_cast<char>(distChar_(rngChar_));
                     }
-                    keys.insertLast().data_ = std::move(key);
+                    keys.insertLast().data_ = key;
                 }
                 return keys;
             }
@@ -54,6 +53,17 @@ namespace ds::tests
             std::mt19937_64 rngChar_;
             std::uniform_int_distribution<std::size_t> distLen_;
             std::uniform_int_distribution<int> distChar_;
+        };
+
+        struct StringKeyDisposer
+        {
+            void operator()(amt::ImplicitSequence<std::string*>& keys) const
+            {
+                for (std::string* key : keys)
+                {
+                    delete key;
+                }
+            }
         };
 
         class RandomIntKeyGenerator
@@ -79,32 +89,60 @@ namespace ds::tests
             std::uniform_int_distribution<int> distKey_;
         };
 
-        struct StringLengthComparator
+        struct IntKeyDisposer
         {
-            bool operator()(std::string const& l, std::string const& r) const
+            void operator()(amt::ImplicitSequence<int>&) const
             {
-                return l.size() < r.size();
             }
         };
+
+        struct StringLengthComparator
+        {
+            bool operator()(std::string* const lhs, std::string* const rhs) const
+            {
+                return lhs->size() < rhs->size();
+            }
+        };
+
+        using ReverseStringLengthComparator = decltype(makeReverseComparator(StringLengthComparator()));
+
+        struct StringPtrComparator
+        {
+            bool operator()(std::string* const lhs, std::string* const rhs) const
+            {
+                return *lhs < *rhs;
+            }
+        };
+
+        using ReverseStringPtrComparator = decltype(makeReverseComparator(StringPtrComparator()));
     }
 
     /**
      * @brief Tests sorting algorithm
      * @tparam SortT Sort type
      * @tparam Comparator Comparator type
-     * @tparam KeyGenerator Function objects that generates sequence of n keys
+     * @tparam KeyGenerator Function object that generates sequence of n keys
+     * @tparam KeyDisposer Function object that disposes keys
      */
     template<
         class SortT,
         class Comparator,
-        class KeyGenerator
+        class KeyGenerator,
+        class KeyDisposer
     >
     class GenericSortTest : public LeafTest
     {
     public:
-        GenericSortTest(const std::string& name, KeyGenerator keyGenerator, Comparator cmp, int elementCount) :
-            tests::LeafTest(name),
+        GenericSortTest(
+            const std::string& name,
+            KeyGenerator keyGenerator,
+            KeyDisposer keyDisposer,
+            Comparator cmp,
+            size_t elementCount
+        ) :
+            LeafTest(name),
             keyGenerator_(std::move(keyGenerator)),
+            keyDisposer_(std::move(keyDisposer)),
             cmp_(std::move(cmp)),
             elementCount_(elementCount)
         {
@@ -117,12 +155,14 @@ namespace ds::tests
             auto sorter = SortT();
             sorter.sort(keys, cmp_);
             this->assert_true(std::is_sorted(keys.begin(), keys.end(), cmp_), "Is sorted.");
+            keyDisposer_(keys);
         }
 
     private:
         KeyGenerator keyGenerator_;
+        KeyDisposer keyDisposer_;
         Comparator cmp_;
-        int elementCount_;
+        size_t elementCount_;
     };
 
     /**
@@ -133,60 +173,70 @@ namespace ds::tests
     class MultiCmpSortTest : public CompositeTest
     {
     public:
-        MultiCmpSortTest(std::string const& name, std::mt19937_64& seeder, int const elementCount) :
+        MultiCmpSortTest(std::string const& name, std::mt19937_64& seeder, std::initializer_list<int> elementCounts) :
             tests::CompositeTest(name)
         {
             using namespace details;
-            this->add_test(std::make_unique<GenericSortTest<SortT<int>, std::less<int>, RandomIntKeyGenerator>>(
-                "int-keys-asc",
-                RandomIntKeyGenerator(seeder),
-                std::less<int>(),
-                elementCount
-            ));
-            this->add_test(std::make_unique<GenericSortTest<SortT<int>, std::greater<int>, RandomIntKeyGenerator>>(
-                "int-keys-desc",
-                RandomIntKeyGenerator(seeder),
-                std::greater<int>(),
-                elementCount
-            ));
-            this->add_test(std::make_unique<GenericSortTest<SortT<std::string>, std::less<std::string>, RandomStringKeyGenerator>>(
-                "string-keys-asc",
-                RandomStringKeyGenerator(seeder),
-                std::less<std::string>(),
-                elementCount
-            ));
-            this->add_test(std::make_unique<GenericSortTest<SortT<std::string>, std::greater<std::string>, RandomStringKeyGenerator>>(
-                "string-keys-desc",
-                RandomStringKeyGenerator(seeder),
-                std::greater<std::string>(),
-                elementCount
-            ));
-            this->add_test(std::make_unique<GenericSortTest<SortT<std::string>, StringLengthComparator, RandomStringKeyGenerator>>(
-                "string-keys-length-asc",
-                RandomStringKeyGenerator(seeder),
-                StringLengthComparator(),
-                elementCount
-            ));
-            this->add_test(std::make_unique<GenericSortTest<SortT<std::string>, decltype(makeReverseComparator(StringLengthComparator())), RandomStringKeyGenerator>>(
-                "string-keys-length-desc",
-                RandomStringKeyGenerator(seeder),
-                makeReverseComparator(StringLengthComparator()),
-                elementCount
-            ));
+            for (auto const n : elementCounts)
+            {
+                this->add_test(std::make_unique<GenericSortTest<SortT<int>, std::less<>, RandomIntKeyGenerator, IntKeyDisposer>>(
+                    "int-keys-asc-" + std::to_string(n),
+                    RandomIntKeyGenerator(seeder),
+                    IntKeyDisposer(),
+                    std::less<>(),
+                    n
+                ));
+                this->add_test(std::make_unique<GenericSortTest<SortT<int>, std::greater<>, RandomIntKeyGenerator, IntKeyDisposer>>(
+                    "int-keys-desc-" + std::to_string(n),
+                    RandomIntKeyGenerator(seeder),
+                    IntKeyDisposer(),
+                    std::greater<>(),
+                    n
+                ));
+                this->add_test(std::make_unique<GenericSortTest<SortT<std::string*>, StringPtrComparator, RandomStringKeyGenerator, StringKeyDisposer>>(
+                    "string-keys-asc-" + std::to_string(n),
+                    RandomStringKeyGenerator(seeder),
+                    StringKeyDisposer(),
+                    StringPtrComparator(),
+                    n
+                ));
+                this->add_test(std::make_unique<GenericSortTest<SortT<std::string*>, ReverseStringPtrComparator, RandomStringKeyGenerator, StringKeyDisposer>>(
+                    "string-keys-desc-" + std::to_string(n),
+                    RandomStringKeyGenerator(seeder),
+                    StringKeyDisposer(),
+                    makeReverseComparator(StringPtrComparator()),
+                    n
+                ));
+                this->add_test(std::make_unique<GenericSortTest<SortT<std::string*>, StringLengthComparator, RandomStringKeyGenerator, StringKeyDisposer>>(
+                    "string-keys-length-asc-" + std::to_string(n),
+                    RandomStringKeyGenerator(seeder),
+                    StringKeyDisposer(),
+                    StringLengthComparator(),
+                    n
+                ));
+                this->add_test(std::make_unique<GenericSortTest<SortT<std::string*>, ReverseStringLengthComparator, RandomStringKeyGenerator, StringKeyDisposer>>(
+                    "string-keys-length-desc-" + std::to_string(n),
+                    RandomStringKeyGenerator(seeder),
+                    StringKeyDisposer(),
+                    makeReverseComparator(StringLengthComparator()),
+                    n
+                ));
+            }
         }
     };
 
     /**
      * @brief Special test case for radix sort
      */
-    class RadixSortTest : public GenericSortTest<adt::RadixSort<int, int>, std::less<int>, details::RandomIntKeyGenerator>
+    class RadixSortTest : public GenericSortTest<adt::RadixSort<int, int>, std::less<>, details::RandomIntKeyGenerator, details::IntKeyDisposer>
     {
     public:
         RadixSortTest(std::mt19937_64& seeder) :
             GenericSortTest(
                 "RadixSort",
                 details::RandomIntKeyGenerator(seeder),
-                std::less<int>(),
+                details::IntKeyDisposer(),
+                std::less<>(),
                 1'000
             )
         {
@@ -203,13 +253,17 @@ namespace ds::tests
             CompositeTest("Sort")
         {
             auto seeder = std::mt19937_64(247);
-            this->add_test(std::make_unique<MultiCmpSortTest<adt::SelectSort>>("SelectSort", seeder, 100));
-            this->add_test(std::make_unique<MultiCmpSortTest<adt::BubbleSort>>("BubbleSort", seeder, 100));
-            this->add_test(std::make_unique<MultiCmpSortTest<adt::InsertSort>>("InsertSort", seeder, 100));
-            this->add_test(std::make_unique<MultiCmpSortTest<adt::QuickSort>>("QuickSort", seeder, 10'000));
-            this->add_test(std::make_unique<MultiCmpSortTest<adt::HeapSort>>("HeapSort", seeder, 10'000));
-            this->add_test(std::make_unique<MultiCmpSortTest<adt::ShellSort>>("ShellSort", seeder, 10'000));
-            this->add_test(std::make_unique<MultiCmpSortTest<adt::MergeSort>>("MergeSort", seeder, 10'000));
+
+            auto const smallNs = { 1,2,3,100 };
+            auto const bigNs = { 1,2,3,10'000 };
+
+            this->add_test(std::make_unique<MultiCmpSortTest<adt::SelectSort>>("SelectSort", seeder, smallNs));
+            this->add_test(std::make_unique<MultiCmpSortTest<adt::BubbleSort>>("BubbleSort", seeder, smallNs));
+            this->add_test(std::make_unique<MultiCmpSortTest<adt::InsertSort>>("InsertSort", seeder, smallNs));
+            this->add_test(std::make_unique<MultiCmpSortTest<adt::QuickSort>>("QuickSort", seeder, bigNs));
+            this->add_test(std::make_unique<MultiCmpSortTest<adt::HeapSort>>("HeapSort", seeder, bigNs));
+            this->add_test(std::make_unique<MultiCmpSortTest<adt::ShellSort>>("ShellSort", seeder, bigNs));
+            this->add_test(std::make_unique<MultiCmpSortTest<adt::MergeSort>>("MergeSort", seeder, bigNs));
             this->add_test(std::make_unique<RadixSortTest>(seeder));
         }
     };

@@ -31,6 +31,7 @@ class HierarchyHandler
 private:
 
     ds::amt::MultiWayExplicitHierarchy<HierarchyNode*> hierarchy_;
+    ds::amt::ImplicitSequence<HierarchyNode*> nodeSeq;
     int datasetNumber_ = 0;
 
 public:
@@ -38,6 +39,7 @@ public:
 
     
     void createHierarchy() { 
+        
         hierarchy_.emplaceRoot();
         
     }
@@ -48,6 +50,7 @@ public:
 
         
         HierarchyNode* systemData = new HierarchyNode;
+        nodeSeq.insertLast().data_ = systemData;
         systemData->setName(inputSequence.accessFirst()->data_->getSystem());
         systemData->setIsZastavka(false);
 
@@ -75,6 +78,7 @@ public:
             if (tempMuni != data->getMuni())
             {
                 HierarchyNode* muniData = new HierarchyNode;
+                nodeSeq.insertLast().data_ = muniData;
                 muniData->setName(data->getMuni());
                 muniData->setIsZastavka(false);
 
@@ -90,6 +94,7 @@ public:
                 muniIndex++;
 
                 HierarchyNode* synData = new HierarchyNode;
+                nodeSeq.insertLast().data_ = synData;
                 synData->setName(data->getStopName());
                 synData->setZastavka(data);
                 synData->setIsZastavka(true);
@@ -105,6 +110,7 @@ public:
             {
                 
                 HierarchyNode* synData = new HierarchyNode;
+                nodeSeq.insertLast().data_ = synData;
                 synData->setName(data->getStopName());
                 synData->setZastavka(data);
                 synData->setIsZastavka(true);
@@ -157,17 +163,23 @@ public:
 
 
     void cleanUp() {
-        for (auto i = hierarchy_.begin(); i != hierarchy_.end(); ++i) {
-
-            delete (*i);
+        //hierarchy_;
+        //for (auto i = hierarchy_.begin(); i != hierarchy_.end(); ++i) {
+        //    delete (*i);
+        //    //delete (*i);
+        //}
+        for (auto i = 0; i < nodeSeq.size(); i++)
+        {
+            delete nodeSeq.access(i)->data_;
         }
-        
+        nodeSeq.clear();
+        hierarchy_.clear();
     }
 
     void iterateHierarchy() {
         std::cout << " \n " << std::endl;
         ds::amt::MultiWayExplicitHierarchyBlock<HierarchyNode*>* actualPosition = hierarchy_.accessRoot();
-        
+        int position = -1;
         
         
         while (true)
@@ -175,24 +187,15 @@ public:
             ds::amt::Hierarchy<ds::amt::MultiWayExplicitHierarchyBlock<HierarchyNode*>>::PreOrderHierarchyIterator currentPositionStart_(&hierarchy_, actualPosition);
         
             
-            
-            
-                
             std::cout << "\n---------------------Parent--------------------------- \n" << std::endl;
-            if (actualPosition == nullptr) {
-                //std::cout << "Root hierarchy" << std::endl;
+            
+            if (position <= 0)
+            {
+                std::cout << "je Root hierarchy" << std::endl;
             }
-            else if (actualPosition->parent_ == nullptr) {
-                //std::cout << "Root hierarchy" << std::endl;
-            }
-            else if (actualPosition->parent_->data_ == nullptr) {
-                std::cout << "Root hierarchy" << std::endl;
-            }
-            else if (actualPosition->parent_->data_->getStopName() == "") {
-                std::cout << "Root hierarchy" << std::endl;
-            }
-            else {
-                std::cout << actualPosition->parent_->data_->getStopName() << std::endl;
+            else 
+            {
+                std::cout << hierarchy_.accessParent(*actualPosition)->data_->getStopName() << std::endl;
             }
             std::cout << "\n------------------------------------------------------ " << std::endl;
             
@@ -225,6 +228,7 @@ public:
 
             if (indexMenu == 0)
             {
+                position++;
                 //ist na syna
                 std::cout << "\nSynovia\n";
                 int indexSon;
@@ -239,11 +243,12 @@ public:
             }
             if (indexMenu == 1)
             {
-
+                
                 //ist na rodica
                 if (!hierarchy_.isRoot(*actualPosition))
                 {
                     actualPosition = hierarchy_.accessParent(*actualPosition);
+                    position--;
                 }
             }
             if (indexMenu == 2)
@@ -275,25 +280,34 @@ public:
 
                 if (predicateChoice == 1) {
                     busStopManager.filterAndInsert(currentPositionStart_, hierarchy_.end(), filteredSequence,
-                        [predicateString](HierarchyNode* node) {
+                        [&, predicateString](HierarchyNode* node) {
+                            
                             if (node) {
-                                std::string stopName = node->getStopName();
-                                if (!stopName.empty()) {
-                                    return stopName.find(predicateString) == 0;
+                                
+                                if (!hierarchy_.isRoot(*actualPosition)) {
+                                    std::string stopName = node->getStopName();
+                                    if (!stopName.empty()) {
+                                        return stopName.find(predicateString) == 0;
+                                    }
                                 }
                             }
+
                             return false;
                         });
                 }
                 else if (predicateChoice == 2) {
                     busStopManager.filterAndInsert(currentPositionStart_, hierarchy_.end(), filteredSequence,
-                        [predicateString](HierarchyNode* node) {
+                        [&, predicateString](HierarchyNode* node) {
+                            
                             if (node) {
-                                std::string stopName = node->getStopName();
-                                if (!stopName.empty()) {
-                                    return stopName.find(predicateString) != std::string::npos;
+                                if (!hierarchy_.isRoot(*actualPosition)) {
+                                    std::string stopName = node->getStopName();
+                                    if (!stopName.empty()) {
+                                        return stopName.find(predicateString) != std::string::npos;
+                                    }
                                 }
                             }
+                            
                             return false;
                         });
                 }

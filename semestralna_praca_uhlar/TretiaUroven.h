@@ -19,7 +19,6 @@ public:
     ds::adt::HashTable<std::string, ds::amt::ImplicitSequence<Zastavka*>*> loadTable(InputIterator beginIterator, InputIterator endIterator) {
 
         ds::adt::HashTable<std::string, ds::amt::ImplicitSequence<Zastavka*>*> tableOfStops;
-
         tableSequence = new ds::amt::ImplicitSequence<ds::amt::ImplicitSequence<Zastavka*>*>;
 
         
@@ -44,7 +43,6 @@ public:
             }
 
         }
-        
         
         return tableOfStops;
     }
@@ -78,10 +76,9 @@ public:
     void cleanUp() {
         for (auto i = tableSequence->begin(); i != tableSequence->end(); ++i) {
             
-            auto data = (*i);
-            data->size();
             delete (*i);
         }
+        tableSequence->clear();
         delete tableSequence;
     }
 };

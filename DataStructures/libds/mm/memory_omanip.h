@@ -43,7 +43,6 @@ namespace ds::mm {
 
 }
 
-
 template<typename DataType>
 std::ostream& operator<<(std::ostream& os, const ds::mm::PtrPrint<DataType>& pp) {
 	return os << pp.oss_.str();

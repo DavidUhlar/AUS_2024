@@ -467,6 +467,7 @@ int main()
             reader.deleteZastavkaSequence(wkt);
 
             hierarchyHandler.cleanUp();
+            
 
             tableHandlerCow.cleanUp();
             tableHandlerKam.cleanUp();

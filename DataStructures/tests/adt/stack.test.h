@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <tests/_details/test.hpp>
 #include <libds/adt/stack.h>
 
@@ -8,14 +7,14 @@ namespace ds::tests
 {
     /**
      * @brief Tests the push operation.
-     * \tparam StackT Type of the stack.
+     * @tparam StackT Type of the stack.
      */
     template<class StackT>
-    class StackTestPush : public LeafTest
+    class StackTestPushPeek : public LeafTest
     {
     public:
-        StackTestPush() :
-            LeafTest("push")
+        StackTestPushPeek() :
+            LeafTest("push-peek")
         {
         }
 
@@ -25,6 +24,14 @@ namespace ds::tests
             constexpr int n = 10;
 
             StackT stack;
+
+            this->assert_throws([&stack]()
+                {
+                    stack.peek();
+                },
+                "Empty stack throws on peek"
+            );
+
             for (int i = 0; i < n; ++i)
             {
                 stack.push(i);
@@ -37,7 +44,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the pop operation.
-     * \tparam StackT Type of the stack.
+     * @tparam StackT Type of the stack.
      */
     template<class StackT>
     class StackTestPop : public LeafTest
@@ -54,6 +61,14 @@ namespace ds::tests
             constexpr int n = 10;
 
             StackT stack;
+
+            this->assert_throws([&stack]()
+                {
+                    stack.pop();
+                },
+                "Empty stack throws on pop"
+            );
+
             for (int i = 0; i < n; ++i)
             {
                 stack.push(i);
@@ -64,13 +79,13 @@ namespace ds::tests
                 this->assert_equals(i, stack.pop());
             }
 
-            this->assert_true(stack.isEmpty(), "Stack is empty.");
+            this->assert_true(stack.isEmpty(), "Stack is empty");
         }
     };
 
     /**
      * @brief Tests the clear operation.
-     * \tparam StackT Type of the stack.
+     * @tparam StackT Type of the stack.
      */
     template<class StackT>
     class StackTestClear : public LeafTest
@@ -101,7 +116,7 @@ namespace ds::tests
 
     /**
      * @brief Tests copy construction, assign, and equals.
-     * \tparam StackT Type of the stack.
+     * @tparam StackT Type of the stack.
      */
     template<class StackT>
     class StackTestCopyAssignEquals : public LeafTest
@@ -138,7 +153,7 @@ namespace ds::tests
 
     /**
      * @brief All stack leaf tests.
-     * \tparam StackT Type of the stack.
+     * @tparam StackT Type of the stack.
      */
     template<class StackT>
     class GeneralStackTest : public CompositeTest
@@ -147,7 +162,7 @@ namespace ds::tests
         GeneralStackTest(const std::string& name) :
             CompositeTest(name)
         {
-            this->add_test(std::make_unique<StackTestPush<StackT>>());
+            this->add_test(std::make_unique<StackTestPushPeek<StackT>>());
             this->add_test(std::make_unique<StackTestPop<StackT>>());
             this->add_test(std::make_unique<StackTestClear<StackT>>());
             this->add_test(std::make_unique<StackTestCopyAssignEquals<StackT>>());

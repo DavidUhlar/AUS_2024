@@ -5,7 +5,6 @@
 #include <libds/amt/implicit_sequence.h>
 #include <memory>
 
-
 namespace ds::tests
 {
     /**

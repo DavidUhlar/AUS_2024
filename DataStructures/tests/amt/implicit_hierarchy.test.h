@@ -4,9 +4,22 @@
 #include <tests/_details/test.hpp>
 #include <memory>
 
-
 namespace ds::tests
 {
+    namespace details
+    {
+        template<std::size_t K>
+        amt::ImplicitHierarchy<int, K> makeIH(const int n)
+        {
+            amt::ImplicitHierarchy<int, K> ih;
+            for (int i = 0; i < n; ++i)
+            {
+                ih.insertLastLeaf().data_ = i;
+            }
+            return ih;
+        };
+    }
+
     /**
      * @brief Tests unsupported methods that should just throw an exception.
      */
@@ -64,7 +77,7 @@ namespace ds::tests
         void test() override
         {
             constexpr auto n = 9;
-            amt::ImplicitHierarchy<int, 3> hierarchy;
+            auto hierarchy = amt::ImplicitHierarchy<int, 3>();
             for (int i = 0; i < n; ++i)
             {
                 hierarchy.insertLastLeaf().data_ = i;
@@ -95,13 +108,11 @@ namespace ds::tests
     protected:
         void test() override
         {
+            const auto emptyHierarchy = amt::ImplicitHierarchy<int, 3>();
+            this->assert_null(emptyHierarchy.accessRoot());
+
             constexpr auto n = 9;
-            amt::ImplicitHierarchy<int, 3> hierarchy;
-            this->assert_null(hierarchy.accessRoot());
-            for (int i = 0; i < n; ++i)
-            {
-                hierarchy.insertLastLeaf().data_ = i;
-            }
+            auto hierarchy = details::makeIH<3>(n);
             //              0
             //      /       |       \
             //      1       2       3
@@ -147,11 +158,7 @@ namespace ds::tests
         void test() override
         {
             constexpr auto n = 9;
-            amt::ImplicitHierarchy<int, 3> hierarchy;
-            for (int i = 0; i < n; ++i)
-            {
-                hierarchy.insertLastLeaf().data_ = i;
-            }
+            auto hierarchy = details::makeIH<3>(n);
             //              0
             //      /       |       \
             //      1       2       3
@@ -166,6 +173,7 @@ namespace ds::tests
             auto* two = hierarchy.accessSon(*root, 1);
             auto* eight = hierarchy.accessSon(*two, 1);
 
+            this->assert_equals(static_cast<size_t>(0), hierarchy.level(*root));
             this->assert_equals(static_cast<size_t>(1), hierarchy.level(*two));
             this->assert_equals(static_cast<size_t>(2), hierarchy.level(*eight));
 
@@ -190,11 +198,7 @@ namespace ds::tests
         void test() override
         {
             constexpr auto n = 9;
-            amt::ImplicitHierarchy<int, 3> hierarchy;
-            for (int i = 0; i < n; ++i)
-            {
-                hierarchy.insertLastLeaf().data_ = i;
-            }
+            auto hierarchy = details::makeIH<3>(n);
             //              0
             //      /       |       \
             //      1       2       3
@@ -225,18 +229,14 @@ namespace ds::tests
         void test() override
         {
             constexpr auto n = 9;
-            amt::ImplicitHierarchy<int, 3> hierarchy1;
-            for (int i = 0; i < n; ++i)
-            {
-                hierarchy1.insertLastLeaf().data_ = i;
-            }
+            auto hierarchy1 = details::makeIH<3>(n);
 
-            amt::ImplicitHierarchy<int, 3> hierarchy2(hierarchy1);
+            auto hierarchy2(hierarchy1);
             this->assert_true(hierarchy1.equals(hierarchy2), "Copy constructed hierarchy is the same.");
             hierarchy1.removeLastLeaf();
             this->assert_false(hierarchy1.equals(hierarchy2), "Modified copy is different.");
 
-            amt::ImplicitHierarchy<int, 3> hierarchy3;
+            auto hierarchy3 = amt::ImplicitHierarchy<int, 3>();
             hierarchy3.assign(hierarchy1);
             this->assert_true(hierarchy1.equals(hierarchy3), "Assigned hierarchy is the same.");
             hierarchy1.removeLastLeaf();

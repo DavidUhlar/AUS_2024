@@ -5,7 +5,6 @@
 #include <random>
 #include <type_traits>
 
-
 namespace ds::tests
 {
     namespace details
@@ -48,8 +47,8 @@ namespace ds::tests
 
                 while (!lhs.isEmpty())
                 {
-                    const int l = lhs.pop();
-                    const int r = rhs.pop();
+                    const auto l = lhs.pop();
+                    const auto r = rhs.pop();
                     if (l != r)
                     {
                         return false;
@@ -67,7 +66,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the push operation.
-     * \tparam PrioQueueT Type of the priority queue.
+     * @tparam PrioQueueT Type of the priority queue.
      */
     template<class PrioQueueT>
     class PrioQueueTestPush : public details::PrioQueueTestBase<PrioQueueT>
@@ -101,7 +100,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the pop operation.
-     * \tparam PrioQueueT Type of the priority queue.
+     * @tparam PrioQueueT Type of the priority queue.
      */
     template<class PrioQueueT>
     class PrioQueueTestPop : public details::PrioQueueTestBase<PrioQueueT>
@@ -137,7 +136,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the clear operation.
-     * \tparam PrioQueueT Type of the priority queue.
+     * @tparam PrioQueueT Type of the priority queue.
      */
     template<class PrioQueueT>
     class PrioQueueTestClear : public details::PrioQueueTestBase<PrioQueueT>
@@ -168,7 +167,7 @@ namespace ds::tests
 
     /**
      * @brief Tests copy construction, assign.
-     * \tparam PrioQueueT Type of the queue.
+     * @tparam PrioQueueT Type of the queue.
      */
         template<class PrioQueueT>
         class PrioQueueTestCopyAssign : public details::PrioQueueTestBase<PrioQueueT>
@@ -183,7 +182,7 @@ namespace ds::tests
             void test() override
             {
                 constexpr int n = 30;
-                PrioQueueT queue1 = details::PrioQueueTestBase<PrioQueueT>::makeQueue(n);;
+                PrioQueueT queue1 = details::PrioQueueTestBase<PrioQueueT>::makeQueue(n);
                 for (int i = 0; i < n; ++i)
                 {
                     const int newPriority = this->generateRandomPriority();
@@ -195,7 +194,7 @@ namespace ds::tests
                 queue1.pop();
                 this->assert_false(this->bruteforceEquals(queue1, queue2), "Modified copy is different.");
 
-                PrioQueueT queue3 = details::PrioQueueTestBase<PrioQueueT>::makeQueue(n);;;
+                PrioQueueT queue3 = details::PrioQueueTestBase<PrioQueueT>::makeQueue(n);
                 queue3.assign(queue1);
                 this->assert_true(this->bruteforceEquals(queue1, queue3), "Assigned queue is the same.");
                 queue1.pop();
@@ -216,7 +215,7 @@ namespace ds::tests
 
     /**
      * @brief All priority queue leaf tests.
-     * \tparam PrioQueueT Type of the priority queue.
+     * @tparam PrioQueueT Type of the priority queue.
      */
     template<class PrioQueueT>
     class GeneralPrioQueueTest : public CompositeTest
@@ -233,6 +232,112 @@ namespace ds::tests
     };
 
     /**
+     * @brief Tests insertion scenario specific for TwoLists queue.
+     */
+    class TwoListsScenario1 : public details::PrioQueueTestBase<adt::TwoLists<int, int>>
+    {
+    public:
+        TwoListsScenario1() :
+            details::PrioQueueTestBase<adt::TwoLists<int, int>>("TwoListsScenario1")
+        {
+        }
+
+    protected:
+        void test() override
+        {
+            constexpr int n = 9;
+            auto queue = this->makeQueue(n);
+
+            // Into the short list
+            queue.push(2, 2);
+            queue.push(4, 4);
+            queue.push(8, 8);
+
+            // Into the long list
+            queue.push(20, 20);
+            queue.push(30, 30);
+            queue.push(40, 40);
+
+            queue.pop();
+
+            // Into the long list
+            queue.push(10, 10);
+
+            // Into the short list
+            queue.push(3, 3);
+
+            auto prev = queue.pop();
+            while (!queue.isEmpty())
+            {
+                const auto current = queue.pop();
+                this->assert_true(prev <= current, "Popped priority is smaller than previously popped");
+                prev = current;
+            }
+        }
+    };
+
+    /**
+     * @brief Tests insertion scenario specific for TwoLists queue.
+     */
+    class TwoListsScenario2 : public details::PrioQueueTestBase<adt::TwoLists<int, int>>
+    {
+    public:
+        TwoListsScenario2() :
+            details::PrioQueueTestBase<adt::TwoLists<int, int>>("TwoListsScenario2")
+        {
+        }
+
+    protected:
+        void test() override
+        {
+            constexpr int n = 9;
+            auto queue = this->makeQueue(n);
+
+            // Into the short list
+            queue.push(1, 1);
+            queue.push(2, 2);
+            queue.push(3, 3);
+
+            // Into the long list
+            queue.push(10, 10);
+            queue.push(20, 20);
+            queue.push(30, 30);
+
+            queue.pop();
+            queue.pop();
+
+            // Into the long list
+            queue.push(100, 100);
+
+            // Into the short list
+            queue.push(0, 0);
+
+            auto prev = queue.pop();
+            while (!queue.isEmpty())
+            {
+                const auto current = queue.pop();
+                this->assert_true(prev <= current, "Popped priority is smaller than previously popped");
+                prev = current;
+            }
+        }
+    };
+
+    /**
+     * @brief All TwoList queue tests.
+     */
+    class TwoListsTest : public CompositeTest
+    {
+    public:
+        TwoListsTest() :
+            CompositeTest("TwoLists")
+        {
+            this->add_test(std::make_unique<GeneralPrioQueueTest<adt::TwoLists<int, int>>>("TwoLists-GenericTest"));
+            this->add_test(std::make_unique<TwoListsScenario1>());
+            this->add_test(std::make_unique<TwoListsScenario2>());
+        }
+    };
+
+    /**
      * @brief All priority queue tests.
      */
     class PriorityQueueTest : public CompositeTest
@@ -245,8 +350,8 @@ namespace ds::tests
             this->add_test(std::make_unique<GeneralPrioQueueTest<adt::UnsortedExplicitSequencePriorityQueue<int, int>>>("UnsortedExplicit"));
             this->add_test(std::make_unique<GeneralPrioQueueTest<adt::SortedImplicitSequencePriorityQueue<int, int>>>("SortedImplicit"));
             this->add_test(std::make_unique<GeneralPrioQueueTest<adt::SortedExplicitSequencePriorityQueue<int, int>>>("SortedExplicit"));
-            this->add_test(std::make_unique<GeneralPrioQueueTest<adt::TwoLists<int, int>>>("TwoLists"));
             this->add_test(std::make_unique<GeneralPrioQueueTest<adt::BinaryHeap<int, int>>>("BinaryHeap"));
+            this->add_test(std::make_unique<TwoListsTest>());
         }
     };
 }

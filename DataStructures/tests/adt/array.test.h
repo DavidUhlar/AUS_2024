@@ -3,7 +3,6 @@
 #include <tests/_details/test.hpp>
 #include <libds/adt/array.h>
 
-
 namespace ds::tests
 {
     /**

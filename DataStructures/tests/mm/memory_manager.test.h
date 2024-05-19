@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 
-
 namespace ds::tests
 {
     class MemoryManagerTestAllocate : public LeafTest

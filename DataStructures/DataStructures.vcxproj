@@ -118,7 +118,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <BrowseInformation>true</BrowseInformation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -140,6 +140,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,7 +156,6 @@
     <ClCompile Include="tests\_details\test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="complexities\table_analyzer.h" />
     <ClInclude Include="libds\adt\abstract_data_type.h" />
     <ClInclude Include="libds\adt\array.h" />
     <ClInclude Include="libds\adt\list.h" />
@@ -206,7 +206,7 @@
     <ClInclude Include="tests\_details\test.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="..\ds.natvis" />
+    <Natvis Include="ds.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

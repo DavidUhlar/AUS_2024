@@ -3,13 +3,13 @@
 #include <tests/_details/test.hpp>
 #include <libds/amt/sequence.h>
 #include <memory>
-
+#include <type_traits>
 
 namespace ds::tests
 {
     /**
      * @brief Tests calculation of elements position.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestCalculateIndex : public LeafTest
@@ -35,14 +35,16 @@ namespace ds::tests
             const size_t threeIndex = seq.calculateIndex(*three);
             this->assert_equals(static_cast<size_t>(2), threeIndex);
 
-            decltype(three) x;
-            this->assert_equals(INVALID_INDEX, seq.calculateIndex(*x));
+            using BlockType = std::remove_pointer_t<decltype(three)>;
+
+            BlockType x;
+            this->assert_equals(INVALID_INDEX, seq.calculateIndex(x));
         }
     };
 
     /**
      * @brief Tests insertion of the first and the last element.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestInsertEnds : public LeafTest
@@ -71,7 +73,7 @@ namespace ds::tests
 
     /**
      * @brief Tests insertion at random positions.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestInsertRandom : public LeafTest
@@ -112,7 +114,7 @@ namespace ds::tests
 
     /**
      * @brief Tests insertion before a block.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestInsertBefore : public LeafTest
@@ -154,7 +156,7 @@ namespace ds::tests
 
     /**
      * @brief Tests insertion after a block.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestInsertAfter : public LeafTest
@@ -196,7 +198,7 @@ namespace ds::tests
 
     /**
      * @brief Tests access of the first and the last element.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestAccessEnds : public LeafTest
@@ -229,7 +231,7 @@ namespace ds::tests
 
     /**
      * @brief Tests access of elements at an arbitrary position.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestAccessRandom : public LeafTest
@@ -262,7 +264,7 @@ namespace ds::tests
 
     /**
      * @brief Test access of next and previous to block element.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestAccessPrevNext : public LeafTest
@@ -295,7 +297,7 @@ namespace ds::tests
 
     /**
      * @brief Tests removal of the first and the last element.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestRemoveEnds : public LeafTest
@@ -336,7 +338,7 @@ namespace ds::tests
 
     /**
      * @brief Tests removal of element at an arbitrary position.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestRemoveRandom : public LeafTest
@@ -374,7 +376,7 @@ namespace ds::tests
 
     /**
      * @brief Tests removal of next to block element.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestRemoveNext : public LeafTest
@@ -416,7 +418,7 @@ namespace ds::tests
 
     /**
      * @brief Tests removal of previous to block element.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestRemovePrevious : public LeafTest
@@ -458,7 +460,7 @@ namespace ds::tests
 
     /**
      * @brief Tests processing of all elements in forward order.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestProcessForward : public LeafTest
@@ -493,7 +495,7 @@ namespace ds::tests
 
     /**
      * @brief Tests processing of all elements in backward order.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestProcessBackward : public LeafTest
@@ -528,7 +530,7 @@ namespace ds::tests
 
     /**
      * @brief Tests finding a block with property.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestFindWithProperty : public LeafTest
@@ -569,7 +571,7 @@ namespace ds::tests
 
     /**
      * @brief Tests finding block previous to a block with property.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestFindPrevToWithProperty : public LeafTest
@@ -612,7 +614,7 @@ namespace ds::tests
 
     /**
      * @brief Tests iterator of the sequence.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestIterators : public LeafTest
@@ -662,7 +664,7 @@ namespace ds::tests
 
     /**
      * @brief Tests the clear operation.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestClear : public LeafTest
@@ -693,7 +695,7 @@ namespace ds::tests
 
     /**
      * @brief Tests copy construction, assign, and equals.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class SequenceTestCopyAssignEquals : public LeafTest
@@ -730,7 +732,7 @@ namespace ds::tests
 
     /**
      * @brief All generic sequence leaf tests.
-     * \tparam SequenceT Type of the sequence. Either explicit or implicit.
+     * @tparam SequenceT Type of the sequence. Either explicit or implicit.
      */
     template<class SequenceT>
     class GenericSequenceTest : public CompositeTest

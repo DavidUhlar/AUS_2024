@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <cmath>
 #include <cstddef>
 #include <functional>
@@ -171,7 +170,7 @@ namespace ds::tests
          *  Tries to print values of compared objects using to_string function,
          *  operator<<, and std::format.
          *
-         *  \tparam T comparable non floating-point data type.
+         *  @tparam T comparable non floating-point data type.
          *  @param expected expected value.
          *  @param actual actual value.
          */
@@ -187,7 +186,7 @@ namespace ds::tests
          *  Tries to print values of compared objects using to_string function,
          *  operator<<, and std::format.
          *
-         *  \tparam T comparable non floating-point data type.
+         *  @tparam T comparable non floating-point data type.
          *  @param expected expected value.
          *  @param actual actual value.
          *  @param message message that describes the assertion.
@@ -206,7 +205,7 @@ namespace ds::tests
          *  Tries to print values of compared objects using to_string function,
          *  operator<<, and std::format.
          *
-         *  \tparam T floating-point data type.
+         *  @tparam T floating-point data type.
          *  @param expected expected value.
          *  @param actual actual value.
          *  @param epsilon precision used in the comparison.
@@ -226,7 +225,7 @@ namespace ds::tests
          *  Tries to print values of compared objects using to_string function,
          *  operator<<, and std::format.
          *
-         *  \tparam T floating-point data type.
+         *  @tparam T floating-point data type.
          *  @param expected expected value.
          *  @param actual actual value.
          *  @param epsilon precision used in the comparison.
@@ -246,7 +245,7 @@ namespace ds::tests
          *  Tries to print values of compared objects using to_string function,
          *  operator<<, and std::format.
          *
-         *  \tparam T comparable non floating-point data type.
+         *  @tparam T comparable non floating-point data type.
          *  @param expected expected value.
          *  @param actual actual value.
          */
@@ -262,7 +261,7 @@ namespace ds::tests
          *  Tries to print values of compared objects using to_string function,
          *  operator<<, and std::format.
          *
-         *  \tparam T comparable non floating-point data type.
+         *  @tparam T comparable non floating-point data type.
          *  @param expected expected value.
          *  @param actual actual value.
          *  @param message message that describes the assertion.
@@ -281,7 +280,7 @@ namespace ds::tests
          *  Tries to print values of compared objects using to_string function,
          *  operator<<, and std::format.
          *
-         *  \tparam T floating-point data type.
+         *  @tparam T floating-point data type.
          *  @param expected expected value.
          *  @param actual actual value.
          *  @param epsilon precision used in the comparison.
@@ -300,7 +299,7 @@ namespace ds::tests
          *  Tries to print values of compared objects using to_string function,
          *  operator<<, and std::format.
          *
-         *  \tparam T floating-point data type.
+         *  @tparam T floating-point data type.
          *  @param expected expected value.
          *  @param actual actual value.
          *  @param epsilon precision used in the comparison.
@@ -316,7 +315,7 @@ namespace ds::tests
 
         /**
          *  @brief Asserts that callable object @p f throws something.
-         *  \tparam F callable object type.
+         *  @tparam F callable object type.
          *  @param f callable object.
          */
         template<class F>
@@ -324,7 +323,7 @@ namespace ds::tests
 
         /**
          *  @brief Asserts that callable object @p f throws something.
-         *  \tparam F callable object type.
+         *  @tparam F callable object type.
          *  @param f callable object.
          *  @param message message that describes the assertion.
          */
@@ -522,6 +521,26 @@ namespace ds::tests
         Test& t,
         ConsoleOutputType o = ConsoleOutputType::Full
     ) -> void;
+
+    /**
+     *  \brief Dummy class holding a resource.
+     */
+    class DummyData
+    {
+    public:
+        DummyData();
+        explicit DummyData(int number);
+        DummyData(const DummyData& other);
+        DummyData(DummyData&& other) noexcept;
+        ~DummyData();
+
+        auto get_number() const -> int;
+
+        auto set_number(int newNumber) -> void;
+
+    private:
+        int* number_;
+    };
 
 // LeafTest:
 

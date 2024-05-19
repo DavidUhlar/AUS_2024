@@ -2,7 +2,7 @@
 #include <tests/_details/console_output.hpp>
 #include <algorithm>
 #include <exception>
-
+#include <utility>
 
 namespace ds::tests
 {
@@ -287,5 +287,40 @@ namespace ds::tests
     {
         auto out = TestOutputterVisitor(o);
         t.accept(out);
+    }
+
+    DummyData::DummyData() :
+        number_(new int())
+    {
+    }
+
+    DummyData::DummyData(int number) :
+        number_(new int(number))
+    {
+    }
+
+    DummyData::DummyData(const DummyData& other) :
+        number_(new int(other.get_number()))
+    {
+    }
+
+    DummyData::DummyData(DummyData&& other) noexcept :
+        number_(std::exchange(other.number_, nullptr))
+    {
+    }
+
+    DummyData::~DummyData()
+    {
+        delete number_;
+    }
+
+    auto DummyData::get_number() const -> int
+    {
+        return *number_;
+    }
+
+    auto DummyData::set_number(int newNumber) -> void
+    {
+        *number_ = newNumber;
     }
 }

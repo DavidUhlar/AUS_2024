@@ -43,9 +43,7 @@ namespace ds::adt {
     {
     public:
         using Node = typename Tree<T>::Node;
-        using IteratorType = typename HierarchyType::IteratorType;
 
-    public:
         GeneralTree();
         GeneralTree(const GeneralTree& other);
 
@@ -68,9 +66,6 @@ namespace ds::adt {
         bool isNThSon(const Node& node, size_t sonOrder) const override;
         bool isLeaf(const Node& node) const override;
         bool hasNThSon(const Node& node, size_t sonOrder) const override;
-
-        IteratorType begin();
-        IteratorType end();
 
     private:
         using NodeType = typename HierarchyType::BlockType;
@@ -166,7 +161,7 @@ namespace ds::adt {
         typename HierarchyType::BlockType* son = this->getHierarchy()->accessSon(this->getNode(node), sonOrder);
         if (son == nullptr)
         {
-            this->error("No such son!");
+            throw std::out_of_range("No such son!");
         }
         return son;
     }
@@ -225,18 +220,6 @@ namespace ds::adt {
         return this->getHierarchy()->hasNthSon(this->getNode(node), sonOrder);
     }
 
-    template <typename T, typename HierarchyType>
-    auto GeneralTree<T, HierarchyType>::begin() -> IteratorType
-    {
-        return this->getHierarchy()->begin();
-    }
-
-    template <typename T, typename HierarchyType>
-    auto GeneralTree<T, HierarchyType>::end() -> IteratorType
-    {
-        return this->getHierarchy()->end();
-    }
-
     template<typename T, typename HierarchyType>
     auto GeneralTree<T, HierarchyType>::getNode(Node* node) -> NodeType*
     {
@@ -258,7 +241,6 @@ namespace ds::adt {
     template <typename T, typename HierarchyType>
     HierarchyType* GeneralTree<T, HierarchyType>::getHierarchy() const
     {
-        return static_cast<HierarchyType*>(this->memoryStructure_);
+        return dynamic_cast<HierarchyType*>(this->memoryStructure_);
     }
-
 }

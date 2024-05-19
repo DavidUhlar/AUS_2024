@@ -10,7 +10,6 @@
 #include <tests/adt/tree.test.h>
 #include <tests/adt/sorts.test.h>
 
-
 namespace ds::tests
 {
     class ADTTest : public CompositeTest

@@ -1,6 +1,5 @@
 #pragma once
 
-
 /**
  * @brief Creates default-constructed object at @p address.
  */
@@ -17,6 +16,15 @@ template<typename T>
 T* placement_copy(T* address, const T& origin)
 {
 	return new (address) T(origin);
+}
+
+/**
+ * @brief Explicitly calls destructor of the object living at @p address.
+ */
+template<typename T>
+void destroy(T* address)
+{
+    address->~T();
 }
 
 #if (defined(_WIN32) || defined(_WIN64)) \

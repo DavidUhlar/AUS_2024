@@ -1,8 +1,6 @@
 #pragma once
 
-#if defined(_WIN32) || defined(_WIN64) || !defined(__CYGWIN__)
 #include <libds/heap_monitor.h>
-#endif
 
 namespace ds::mm {
 
@@ -53,7 +51,7 @@ namespace ds::mm {
 	template<typename BlockType>
     void MemoryManager<BlockType>::releaseAndSetNull(BlockType*& pointer)
 	{
-		releaseMemory(pointer);
+		this->releaseMemory(pointer);
 		pointer = nullptr;
 	}
 
@@ -62,5 +60,4 @@ namespace ds::mm {
 	{
 		return allocatedBlockCount_;
 	}
-
 }
